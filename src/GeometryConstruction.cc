@@ -41,7 +41,7 @@ GeometryConstruction::GeometryConstruction() : G4VUserDetectorConstruction(){
 
     // Set default values for world.
 	//FIXME! change to dimension of the experimental hall.
-    
+
     world_x = 10.*m;
     world_y = 10.*m;
     world_z = 10.*m;
@@ -93,27 +93,29 @@ G4VPhysicalVolume* GeometryConstruction::ConstructWorld(){
 
 void GeometryConstruction::ConstructUserVolumes(){
 	G4cout<<"Construct user volumes..."<<G4endl;
-	// At this point GeometryManager::SetFilePath() has been called by GeometryConstructionMessenger 
+	// At this point GeometryManager::SetFilePath() has been called by GeometryConstructionMessenger
 	// Mark that we are ready to load dimensions!
 	GeometryManager::Get()->GeometryTypeAndFilesSet();
-	// Load dimensions. 
+	// Load dimensions.
 	GeometryManager::Get()->LoadDimensions();
 	G4int geoType = GeometryManager::Get()->GetGeometryType();
 	G4cout<<"geometry type is "<<geoType<<G4endl;
-	
+
 	//Construct geometry.
 	//It is a good idea to use only one geoType tag to control major and sub types.
-	//It helps to avoid potentially conflicting user commends. 
+	//It helps to avoid potentially conflicting user commends.
 	if(geoType==0){ //TESSERACT
 	        G4cout<<"TESSERACT"<<G4endl;
 			//Each component is instantiated and constructed seperately.
 			GeoShielding* TESSERACTShield = new GeoShielding();
 			GeoCryostat* TESSERACTCryostat = new GeoCryostat();
 			//GeoDetectorSPICE* detectorSPICE = new GeoDetectorSPICE());
+      GeoDetectorHerald* detectorHERALD = new GeoDetectorHerald();
 			TESSERACTShield->Construct();
 			TESSERACTCryostat->Construct();
-			//FIXME! Add HERALD to another geoType. 
+			//FIXME! Add HERALD to another geoType.
 			// detectorSPICE->Construct();
+      detectorHERALD->Construct();
 	}
 	else if(geoType==1){ //Cubic cow
 		simple_cube->Construct();
@@ -131,7 +133,7 @@ void GeometryConstruction::ConstructUserVolumes(){
 			fs[i] -> PlaceDetector( name.str(), pos );
 		}
 	}
-	else{ 
+	else{
 		G4cerr<<"GeometryConstruction:: Geometry Type"<<geoType<<" not defined!"<<G4endl;
 	}
 	G4cout<<"User volumes constructed!!!"<<G4endl;
@@ -144,18 +146,16 @@ void GeometryConstruction::ConstructUserVolumes(){
 
 /*
 G4VIStore* GeometryConstruction::CreateImportanceStore(){
-    
+
     //===============  Importance Sampling to speed up simulation ==============//
-    
+
     G4IStore *istore = G4IStore::GetInstance();
 
     istore->AddImportanceGeometryCell( 1, *world_pv);
     for( unsigned int i=0; i<list.size(); i++ ){
         istore->AddImportanceGeometryCell( list[i].bias, *list[i].phy);
     }
-    
+
     return istore;
 }
 */
-
-
