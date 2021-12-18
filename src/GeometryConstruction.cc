@@ -13,6 +13,7 @@
 #include "GeometryConstructionMessenger.hh"
 #include "GeometryManager.hh"
 #include "GeoShielding.hh"
+#include "GeoDetectorHerald.hh"
 #include "GeoCryostat.hh"
 #include "FarsideDetectorMessenger.hh"
 #include "FarsideDetector.hh"
