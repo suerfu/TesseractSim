@@ -57,6 +57,8 @@ set(SCRIPTS
   /macros/init_vis.mac
   /macros/vis.mac
   /macros/icons.mac
+  /macros/test.mac
+  /macros/rock.mac
   /config/geometry/cryoPlates_Ricochet.dat
   /config/geometry/cryostatBeams_Ricochet.dat
   /config/geometry/cryostatWall_Ricochet.dat
@@ -65,8 +67,6 @@ set(SCRIPTS
   /config/geometry/cryostatBeams_Nucleus.dat
   /config/geometry/cryostatWall_Nucleus.dat
   /config/geometry/dimensions_Nucleus.dat
-  /macros/test.mac
-  /macros/rock.mac
   )
 
 foreach(_script ${SCRIPTS})

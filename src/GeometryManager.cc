@@ -408,32 +408,34 @@ void GeometryManager::LoadDimensions( ){
 		return;
 	}
 
-    G4cout<<"Loading geometry from"<<G4endl;
-    G4cout<<dimensionFiles["dimensionFile"]<<G4endl;
-    G4cout<<dimensionFiles["cryostatWallFile"]<<G4endl;
-    G4cout<<dimensionFiles["cryoPlateFile"]<<G4endl;
-    G4cout<<dimensionFiles["cryoBeamFile"]<<G4endl;
+	if(fGeometryType/100==1){// TESSERACT
+		G4cout<<"Loading geometry from"<<G4endl;
+		G4cout<<dimensionFiles["dimensionFile"]<<G4endl;
+		G4cout<<dimensionFiles["cryostatWallFile"]<<G4endl;
+		G4cout<<dimensionFiles["cryoPlateFile"]<<G4endl;
+		G4cout<<dimensionFiles["cryoBeamFile"]<<G4endl;
 
-    //General dimensions
-    TTree *t = new TTree("tDimension","General Dimensions");
-    t->ReadFile(dimensionFiles["dimensionFile"], "name/C:dim/D");
-    char name[256];
-    double dim;
-    t->SetBranchAddress("name", name);
-    t->SetBranchAddress("dim", &dim);
-    for(int i=0; i<t->GetEntries(); i++){
-        t->GetEntry(i);
-        dimensions[G4String(name)] = dim*mm;
-    }
+		//General dimensions
+		TTree *t = new TTree("tDimension","General Dimensions");
+		t->ReadFile(dimensionFiles["dimensionFile"], "name/C:dim/D");
+		char name[256];
+		double dim;
+		t->SetBranchAddress("name", name);
+		t->SetBranchAddress("dim", &dim);
+		for(int i=0; i<t->GetEntries(); i++){
+			t->GetEntry(i);
+			dimensions[G4String(name)] = dim*mm;
+		}
 
-    //Cryostat walls
-    LoadCryoWalls();
-    //Cryostat plates
-    LoadCryoPlate();
-    //Cryostat beams
-    LoadCryoBeam();
+		//Cryostat walls
+		LoadCryoWalls();
+		//Cryostat plates
+		LoadCryoPlate();
+		//Cryostat beams
+		LoadCryoBeam();
 
-    fDimensionsLoaded = true;
+		fDimensionsLoaded = true;
+	}
 }
 
 

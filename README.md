@@ -91,11 +91,11 @@ can be used to sample particle distributions from another ROOT file.
 ```
 /filter/recordWhenHit bar
 ```
-Record the entire tracks when there is a hit in detector *bar*.
+Record the entire tracks when there is a hit in detector *bar* (physical volume name).
 ```
 /filter/killWhenHit bar
 ```
-Kill any particles that makes their way to detector named *bar*. Useful when you want to sample flux on a surface.
+Kill any particles that makes their way to detector named *bar* (physical volume name). Useful when you want to sample flux on a surface.
 ```
 /filter/excludeParticle bar
 /filter/excludeProcess bar

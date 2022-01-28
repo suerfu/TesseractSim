@@ -32,15 +32,6 @@ G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(const G4Track* track
         return fKill;
     }
 
-    // Next, if particle falls onto kill when hit volume, delete the track.
-    G4VPhysicalVolume* pv = track->GetVolume();
-    if( pv!=0 ){
-        G4String vol = pv->GetName();
-        if( fRunAction->KillWhenHit( vol ) ){
-            return fKill;
-        }
-    }
-    
     // If global time is within the window, return urgent regardless of the process:
     //
     G4double window = 60*CLHEP::s;

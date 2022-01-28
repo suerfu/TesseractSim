@@ -95,16 +95,6 @@ void GeometryConstruction::ConstructUserVolumes(){
 
 	G4cout<<"Constructing user volumes..."<<G4endl;
 
-	// At this point GeometryManager::SetFilePath() has been called by GeometryConstructionMessenger 
-	// Mark that we are ready to load dimensions!
-    //
-	GeometryManager::Get()->GeometryTypeAndFilesSet();
-
-	// Load dimensions.
-    // Note by Suerfu on 2022-Jan-17:
-    // The types of dimension files should depend on geometry type.
-    // Maybe consider loading different sets of files depending on the type of geometry?
-	GeometryManager::Get()->LoadDimensions();
 	G4int geoType = GeometryManager::Get()->GetGeometryType();
 	G4cout<<"geometry type is "<<geoType<<G4endl;
 	
@@ -112,18 +102,41 @@ void GeometryConstruction::ConstructUserVolumes(){
 	//It is a good idea to use only one geoType tag to control major and sub types.
 	//It helps to avoid potentially conflicting user commends. 
     //
-	if(geoType==0){ //TESSERACT
+	if(geoType/100==1){ //TESSERACT
 	        G4cout<<"TESSERACT"<<G4endl;
 			//Each component is instantiated and constructed seperately.
 			GeoShielding* TESSERACTShield = new GeoShielding();
 			GeoCryostat* TESSERACTCryostat = new GeoCryostat();
-			//GeoDetectorSPICE* detectorSPICE = new GeoDetectorSPICE());
 			TESSERACTShield->Construct();
 			TESSERACTCryostat->Construct();
-			//FIXME! Add HERALD to another geoType. 
-			// detectorSPICE->Construct();
+			if(geoType%100==0){
+				G4cout<<" Dummy detector"<<G4endl;
+				G4Tubs* dummyDetector = new G4Tubs( "dummyDecector",
+							0,
+							GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
+							(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
+							0, 2*M_PI);
+				G4LogicalVolume * dummyDetectorLogic = new G4LogicalVolume(dummyDetector,
+							GeometryManager::Get()->GetMaterial("G4_Galactic"),
+							"dummyDetectorLV");
+				G4VPhysicalVolume * dummyDetectorPhysical = new G4PVPlacement(0,
+							G4ThreeVector(0,0,-10*mm),
+							dummyDetectorLogic,
+							"dummyDetectorPhysical",
+							GeometryManager::Get()->GetLogicalVolume("world"),
+							false,
+							0,
+							fCheckOverlaps);
+
+			}else if(geoType%100==1){
+				//GeoDetectorHeRALD* detectorHeRALD = new GeoDetectorHeRALD());
+				// detectorHeRALD->Construct();
+			}else if(geoType%100==2){
+				//GeoDetectorSPICE* detectorSPICE = new GeoDetectorSPICE());
+				// detectorSPICE->Construct();
+			}
 	}
-    else if( geoType==1){
+    else if( geoType/100==2){
 
         G4double density = 3.26 * g/cm3;
 

@@ -33,6 +33,10 @@ EventAction::EventAction( RunAction* runaction ) : G4UserEventAction(), fRunActi
     tmp_processName = "";
 
     max_char_len = 15;
+	particleName[15] = '\0';
+	volumeName[15] = '\0';
+	nextVolumeName[15] = '\0';
+	processName[15] = '\0';
     cmdl = fRunAction->GetCommandlineArguments();
 }
 

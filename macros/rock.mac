@@ -1,10 +1,6 @@
 #Set geometry
-/geometry/type 1
-
-/geometry/dimensionFile config/geometry/dimensions_Ricochet.dat
-/geometry/cryostatWallFile config/geometry/cryostatWall_Ricochet.dat
-/geometry/cryoPlateFile config/geometry/cryoPlates_Ricochet.dat
-/geometry/cryoBeamFile config/geometry/cryostatBeams_Ricochet.dat
+/geometry/type 200
+/geometry/construct
 
 /run/initialize
 /tracking/verbose 0

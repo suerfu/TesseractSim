@@ -62,5 +62,16 @@ void SteppingAction::UserSteppingAction( const G4Step* step){
     
     fEventAction->GetStepCollection().push_back(StepInfo(step));
 
+	// Check kill-when-hit volume. Remove the track at the volume surface.
+    G4VPhysicalVolume* pv = track->GetVolume();
+    if( pv!=0 ){
+        G4String vol = pv->GetName();
+        if( fRunAction->KillWhenHit( vol ) ){
+            track->SetTrackStatus(fStopAndKill);
+        }
+    }
+    
+
+
 }
 

@@ -17,16 +17,14 @@
 #/geometry/cryoBeamFile config/geometry/cryostatBeams_Nucleus.dat
 /geometry/construct
 
-# Set some default verbose
-/control/verbose 2
-/control/saveHistory
-/run/verbose 2
-#
-# Change the default number of threads (in multi-threaded mode)
-#/run/numberOfThreads 4
-#
 # Initialize kernel
 /run/initialize
-#
-# Visualization setting
-/control/execute vis.mac
+
+/filter/recordWhenHit dummyDetectorPhysical
+/filter/killWhenHit dummyDetectorPhysical
+
+/gps/particle ion
+/gps/energy 0 keV
+
+/run/printProgress 1000
+/run/beamOn 10000

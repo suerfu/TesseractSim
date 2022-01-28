@@ -13,6 +13,7 @@
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithoutParameter.hh"
 #include "GeometryManager.hh"
 
 GeometryConstructionMessenger::GeometryConstructionMessenger(GeometryConstruction* det) : G4UImessenger(){
@@ -24,12 +25,16 @@ GeometryConstructionMessenger::GeometryConstructionMessenger(GeometryConstructio
 
 	fGeoTypeCmd = new G4UIcmdWithAnInteger( "/geometry/type", this);
 	fGeoTypeCmd->SetGuidance( "Set the geometry type. \n"
-							  "0 -> TESSERACT detector with shielding, cryostat, and inner detector.\n"
+							  "10X -> TESSERACT detector with shielding, cryostat, and inner detector.\n"
+							  "       100 Dummy inner detector.\n"
+							  "       101 HeRALD inner detector.\n"
+							  "       102 SPICE inner detector.\n"
 							  "     Further details are set by the choice of geometry dimension files.\n"
-							  "1 -> Rock geometry used to sample alpha and neutrons from the cavern.");
+							  "200 -> Rock geometry used to sample alpha and neutrons from the cavern.");
 	fGeoTypeCmd->SetParameterName("type", true);
 	fGeoTypeCmd->SetDefaultValue(0);
 
+	// Type 10X 
 	fDimensionFileCmd = new G4UIcmdWithAString( "/geometry/dimensionFile", this);
 	fDimensionFileCmd->SetGuidance( "Dimension file path and name. Use this file to include dimension name, value pairs.\n"
 				"Consider including groups of dimensions for special geometries in seperate files.");
@@ -42,6 +47,10 @@ GeometryConstructionMessenger::GeometryConstructionMessenger(GeometryConstructio
 
 	fCryoBeamFileCmd = new G4UIcmdWithAString( "/geometry/cryoBeamFile", this);
 	fCryoBeamFileCmd->SetGuidance( "TESSERACT cryostat inner beams, file path and name" );
+
+	// All types
+	fConstructGeoCmd = new G4UIcmdWithoutParameter( "/geometry/construct", this);
+	fConstructGeoCmd->SetGuidance( "Construct the geometry after loading parameters" );
 	
 }
 
@@ -71,6 +80,18 @@ void GeometryConstructionMessenger::SetNewValue( G4UIcommand* command, G4String 
 	}
 	else if( command==fCryoBeamFileCmd ){
 		GeometryManager::Get()->SetFilePath("cryoBeamFile", newValue);
+	}
+	else if( command==fConstructGeoCmd ){
+		// At this point GeometryManager::SetFilePath() has been called by GeometryConstructionMessenger 
+		// Mark that we are ready to load dimensions!
+		//
+		GeometryManager::Get()->GeometryTypeAndFilesSet();
+
+		// Load dimensions.
+		// Note by Suerfu on 2022-Jan-17:
+		// The types of dimension files should depend on geometry type.
+		// Maybe consider loading different sets of files depending on the type of geometry?
+		GeometryManager::Get()->LoadDimensions();
 	}
 
 }
