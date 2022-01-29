@@ -92,10 +92,10 @@ private:
      // Pointer to the 2d histogram
 
 
-    double E;
+    G4double E;
         // Energy
 
-    double Theta;
+    G4double Theta;
 
     bool onwall;
         // Flag variable to denote whether particle position should be independently sampled from world surface.

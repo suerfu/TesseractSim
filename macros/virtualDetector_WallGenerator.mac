@@ -19,22 +19,24 @@
 
 # Initialize kernel
 /run/initialize
+/tracking/verbose 0
 
 /filter/recordWhenHit virtualDetectorPhysical
 /filter/killWhenHit virtualDetectorPhysical
 
 #Using the wall generator
-/generator/spectrum config/generator/rockGammaU238.root
+#/generator/spectrum config/generator/rockGammaU238.root
+/generator/spectrum ../../rockGammaU238.root
 /generator/particle gamma
 #can Specify: Top,Bottom,SideRight,SideRight,Front,Back
 /generator/surfacename Top
-/generator/wall_x 10 m
-/generator/wall_y 10 m
-/generator/wall_z 10 m
+/generator/wall_x 0.5 m
+/generator/wall_y 0.5 m
+/generator/wall_z 0.5 m
 
 #Using gps
 #/gps/particle ion
 #/gps/energy 0 keV
 
-/run/printProgress 1000
-/run/beamOn 10000
+/run/printProgress 100
+/run/beamOn 1000

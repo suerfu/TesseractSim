@@ -108,21 +108,12 @@ G4ThreeVector SetPosition(int surface, double wall_x,double wall_y,double wall_z
 }
 
 
-double Sin(double cosTheta)
-{
-    return std::sqrt(1 - cosTheta*cosTheta);
-}
-
-double UniformCosTheta()
-{
-    return CLHEP::RandFlat::shoot(-1.,1.);
-}
 
 
-G4ThreeVector SetDirection(int surface, double Theta ){
+G4ThreeVector SetDirection(int surface, G4double Theta ){
   G4double phi = CLHEP::RandFlat::shoot(0.,2.*CLHEP::pi);
   G4double cosTheta = Theta;
-  G4double sinTheta = Sin(cosTheta);
+  G4double sinTheta = std::sqrt(1 - cosTheta*cosTheta);
 
 
   switch(surface)
@@ -153,7 +144,7 @@ G4ThreeVector SetDirection(int surface, double Theta ){
 }
 
 
-G4double SetEnergy(double E){
+G4double SetEnergy(G4double E){
     return E;
 }
 
@@ -240,7 +231,7 @@ void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
     if( sample==true ){
         h1->GetRandom2(E,Theta);
         fgun->SetParticlePosition( SetPosition(surface_index, wall_x,wall_y,wall_z) );
-        fgun->SetParticleMomentumDirection( SetDirection(Theta,surface_index) );
+        fgun->SetParticleMomentumDirection( SetDirection(surface_index,Theta) );
         fgun->SetParticleEnergy(SetEnergy(E));
         fgun->SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( particle ) );
         fgun->GeneratePrimaryVertex(anEvent);
