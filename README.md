@@ -84,9 +84,15 @@ Available commands for `type 1` include
 
 ### Generator Action
 ```
-/generator/spectrum foo.root
+/generator/spectrum config/generator/rockGammaU238.root
+/generator/particle gamma
+/generator/surfacename Top
+/generator/wall_x 10 m
+/generator/wall_y 10 m
+/generator/wall_z 10 m
 ```
-can be used to sample particle distributions from another ROOT file.
+Can be used to sample Energy and Azimuthal angle from ROOT file, that has a T2HF file with Energy on the X axis and Azimuthal angle on Yaxis.
+One needs to specify the dimensions of cubic Wall, from where the events would be generated randomly. The user also needs to specify the Surface name, for eg: Top, Bottom, SideRight, SideLeft, Front, Back(case sensitive), from which the events would generated. Also needs to specify the particle name, and its user responsibily to match the particle and their ROOT file. 
 
 ### Filtering
 ```
