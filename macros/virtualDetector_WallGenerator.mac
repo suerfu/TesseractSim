@@ -21,15 +21,14 @@
 /run/initialize
 /tracking/verbose 0
 
-/filter/recordWhenHit virtualDetectorPhysical
-/filter/killWhenHit virtualDetectorPhysical
+#/filter/recordWhenHit virtualDetector
+#/filter/killWhenHit virtualDetector
 
 #Using the wall generator
-#/generator/spectrum config/generator/rockGammaU238.root
-/generator/spectrum ../../rockGammaU238.root
+/generator/spectrum config/generator/rockGammaU238.root
 /generator/particle gamma
-#can Specify: Top,Bottom,SideRight,SideRight,Front,Back
-/generator/surfacename Top
+#can Specify:Top,Bottom,SideRight,SideRight,Front,Back
+/generator/surfacename SideRight
 /generator/wall_x 0.5 m
 /generator/wall_y 0.5 m
 /generator/wall_z 0.5 m

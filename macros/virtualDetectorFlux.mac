@@ -20,8 +20,8 @@
 # Initialize kernel
 /run/initialize
 
-/filter/recordWhenHit virtualDetectorPhysical
-/filter/killWhenHit virtualDetectorPhysical
+/filter/recordWhenHit virtualDetector
+/filter/killWhenHit virtualDetector
 
 /gps/particle ion
 /gps/energy 0 keV

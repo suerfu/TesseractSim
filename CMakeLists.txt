@@ -67,6 +67,11 @@ set(SCRIPTS
   /config/geometry/cryostatBeams_Nucleus.dat
   /config/geometry/cryostatWall_Nucleus.dat
   /config/geometry/dimensions_Nucleus.dat
+  /config/generator/rockGammaK40.root
+  /config/generator/rockGammaTh232.root
+  /config/generator/rockGammaU238.root
+  /config/generator/rockNeutronTh232.root
+  /config/generator/rockNeutronUnat.root
   )
 
 foreach(_script ${SCRIPTS})

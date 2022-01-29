@@ -41,7 +41,7 @@ GeometryConstruction::GeometryConstruction() : G4VUserDetectorConstruction(){
 
     // Set default values for world.
 	//FIXME! change to dimension of the experimental hall.
-    
+
     world_x = 10.*m;
     world_y = 10.*m;
     world_z = 10.*m;
@@ -97,10 +97,10 @@ void GeometryConstruction::ConstructUserVolumes(){
 
 	G4int geoType = GeometryManager::Get()->GetGeometryType();
 	G4cout<<"geometry type is "<<geoType<<G4endl;
-	
+
 	//Construct geometry.
 	//It is a good idea to use only one geoType tag to control major and sub types.
-	//It helps to avoid potentially conflicting user commends. 
+	//It helps to avoid potentially conflicting user commends.
     //
 	if(geoType/100==1){ //TESSERACT
 	        G4cout<<"TESSERACT"<<G4endl;
@@ -111,18 +111,18 @@ void GeometryConstruction::ConstructUserVolumes(){
 			TESSERACTCryostat->Construct();
 			if(geoType%100==0){
 				G4cout<<" Dummy detector"<<G4endl;
-				G4Tubs* virtualDetector = new G4Tubs( "virtualDecector",
+				G4Tubs* virtualDetector_physical = new G4Tubs( "virtualDetectorphysical",
 							0,
 							GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
 							(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
 							0, 2*M_PI);
-				G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector,
+				G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_physical,
 							GeometryManager::Get()->GetMaterial("G4_Galactic"),
 							"virtualDetectorLV");
-				G4VPhysicalVolume * virtualDetectorPhysical = new G4PVPlacement(0,
+				G4VPhysicalVolume * virtualDetector = new G4PVPlacement(0,
 							G4ThreeVector(0,0,-10*mm),
 							virtualDetectorLogic,
-							"virtualDetectorPhysical",
+							"virtualDetector",
 							GeometryManager::Get()->GetLogicalVolume("world"),
 							false,
 							0,
@@ -171,7 +171,7 @@ void GeometryConstruction::ConstructUserVolumes(){
 			fs[i] -> PlaceDetector( name.str(), pos );
 		}
 	}
-    
+
 	G4cout<<"User volumes constructed!!!"<<G4endl;
 
 }
@@ -181,18 +181,16 @@ void GeometryConstruction::ConstructUserVolumes(){
 
 /*
 G4VIStore* GeometryConstruction::CreateImportanceStore(){
-    
+
     //===============  Importance Sampling to speed up simulation ==============//
-    
+
     G4IStore *istore = G4IStore::GetInstance();
 
     istore->AddImportanceGeometryCell( 1, *world_pv);
     for( unsigned int i=0; i<list.size(); i++ ){
         istore->AddImportanceGeometryCell( list[i].bias, *list[i].phy);
     }
-    
+
     return istore;
 }
 */
-
-
