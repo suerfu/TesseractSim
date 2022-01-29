@@ -18,6 +18,7 @@
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithADoubleAndUnit.hh"
 
 class GeneratorAction;
 class G4UIdirectory;
@@ -25,6 +26,8 @@ class G4UIdirectory;
 class G4UIcmdWithoutParameter;
 class G4UIcmdWithAString;
 class G4UIcmdWithADouble;
+class G4UIcmdWithAnInteger;
+class G4UIcmdWithADoubleAndUnit;
 
 class GeneratorMessenger : public G4UImessenger {
 
@@ -43,11 +46,17 @@ private:
 
 	G4UIcmdWithAString* cmdSetSpectrum;
 
-    G4UIcmdWithoutParameter* cmdSample;
-    G4UIcmdWithoutParameter* cmdSetPosition;
-    G4UIcmdWithoutParameter* cmdSetDir;
-    G4UIcmdWithoutParameter* cmdSetEnergy;
-    G4UIcmdWithoutParameter* cmdSetWall;
+  G4UIcmdWithAString* cmdSetParticle;
+
+	G4UIcmdWithAString* cmdSetSurfaceName;
+  //G4UIcmdWithoutParameter* cmdSetPosition;
+  //G4UIcmdWithoutParameter* cmdSetDir;
+  //G4UIcmdWithoutParameter* cmdSetEnergy;
+  //G4UIcmdWithoutParameter* cmdSetWall;
+	G4UIcmdWithADoubleAndUnit* cmdSetWall_x;
+	G4UIcmdWithADoubleAndUnit* cmdSetWall_y;
+	G4UIcmdWithADoubleAndUnit* cmdSetWall_z;
+
 
 };
 
