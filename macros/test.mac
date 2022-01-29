@@ -1,21 +1,15 @@
 /run/initialize
-/tracking/verbose 0
+/tracking/verbose 1
 
-/run/printProgress 1000
+/run/printProgress 1
 
 /filter/excludeParticle e-
 /filter/excludeVolume fs1
 /filter/recordWhenHit target
 
-/generator/spectrum ../../rockGammaU238.root
-/generator/particle gamma
-/generator/surfacename Top
-/generator/wall_x 10 m
-/generator/wall_y 10 m
-/generator/wall_z 10 m  
 
-#/gps/particle   ion
-#/gps/ion 92 238
-#/gps/energy 0 keV
+/gps/particle   ion
+/gps/ion 92 238
+/gps/energy 0 keV
 
-/run/beamOn 10000
+/run/beamOn 10

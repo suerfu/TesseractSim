@@ -111,18 +111,18 @@ void GeometryConstruction::ConstructUserVolumes(){
 			TESSERACTCryostat->Construct();
 			if(geoType%100==0){
 				G4cout<<" Dummy detector"<<G4endl;
-				G4Tubs* dummyDetector = new G4Tubs( "dummyDecector",
+				G4Tubs* virtualDetector = new G4Tubs( "virtualDecector",
 							0,
 							GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
 							(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
 							0, 2*M_PI);
-				G4LogicalVolume * dummyDetectorLogic = new G4LogicalVolume(dummyDetector,
+				G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector,
 							GeometryManager::Get()->GetMaterial("G4_Galactic"),
-							"dummyDetectorLV");
-				G4VPhysicalVolume * dummyDetectorPhysical = new G4PVPlacement(0,
+							"virtualDetectorLV");
+				G4VPhysicalVolume * virtualDetectorPhysical = new G4PVPlacement(0,
 							G4ThreeVector(0,0,-10*mm),
-							dummyDetectorLogic,
-							"dummyDetectorPhysical",
+							virtualDetectorLogic,
+							"virtualDetectorPhysical",
 							GeometryManager::Get()->GetLogicalVolume("world"),
 							false,
 							0,

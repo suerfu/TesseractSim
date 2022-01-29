@@ -22,6 +22,8 @@
 //#include "G4RandomDirection.hh"
 //#include "G4IonTable.hh"
 
+#include "TKey.h"
+
 
 
 GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGeneratorAction(),
@@ -38,6 +40,7 @@ GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGenerato
 
     file = 0;
     particle="geantino";
+
 
     surface_index=0;
 
@@ -107,7 +110,7 @@ G4ThreeVector SetPosition(int surface, double wall_x,double wall_y,double wall_z
 
 double Sin(double cosTheta)
 {
-    return std::sqrt(1 - std::pow(cosTheta, 2));
+    return std::sqrt(1 - cosTheta*cosTheta);
 }
 
 double UniformCosTheta()
@@ -139,7 +142,7 @@ G4ThreeVector SetDirection(int surface, double Theta ){
 
 
               case 4://Front YZ, X > 0
-                  return G4ThreeVector(cosTheta, std::sin(phi)*sinTheta,  std::cos(phi)*sinTheta);
+                  return G4ThreeVector(-cosTheta, std::sin(phi)*sinTheta,  std::cos(phi)*sinTheta);
 
 
               case 5://Back YZ, X < 0
@@ -180,7 +183,7 @@ void GeneratorAction::SetConversionSurfaceNameToIndex(G4String str){
     surface_index=5;
   }else {
     surface_index=0;
-    cout<<"Selected surface is "<<str<< "is not found, thus default option Top is seleccted"<<endl;
+    cout<<"Selected surface is "<<str<< "is not found, thus default option Top is selected"<<endl;
   }
 }
 
@@ -218,7 +221,14 @@ void GeneratorAction::SetSpectrum( G4String str ){
         return;
     }
 
-    h1 = (TH2F*)file->Get("thetaE2_pdf");
+    //h1 = (TH2F*)file->Get("thetaE2_pdf");
+    TIter next(file->GetListOfKeys());
+    TString T2HF_name;
+    TKey *key;
+    while ((key=(TKey*)next())) {
+     T2HF_name=key->GetName();
+    }
+    h1 = (TH2F*)file->Get(T2HF_name);
 
     sample = true;
 

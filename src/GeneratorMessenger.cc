@@ -22,7 +22,6 @@ GeneratorMessenger::GeneratorMessenger( GeneratorAction* generator )  : G4UImess
     cmdSetSpectrum->SetParameterName("foo.root", false);
     cmdSetSpectrum->AvailableForStates(G4State_PreInit, G4State_Idle);
 
-
 		cmdSetParticle = new G4UIcmdWithAString("/generator/particle", this);
 		cmdSetParticle->SetGuidance("Set the name of the particle.");
 		cmdSetParticle->SetParameterName("geantino", false);
@@ -99,7 +98,7 @@ void GeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValue){
 	}
 
 	if( command == cmdSetParticle){
-		     primaryGenerator->SetParticleName( newValue);
+				 primaryGenerator->SetParticleName( newValue);
 		 }
 
 	if( command == cmdSetSurfaceName){
