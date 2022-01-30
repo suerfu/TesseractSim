@@ -1,0 +1,30 @@
+
+
+
+/geometry/type 100
+
+/geometry/dimensionFile config/geometry/dimensions_Ricochet.dat
+/geometry/cryostatWallFile config/geometry/cryostatWall_Ricochet.dat
+/geometry/cryoPlateFile config/geometry/cryoPlates_Ricochet.dat
+/geometry/cryoBeamFile config/geometry/cryostatBeams_Ricochet.dat
+#/geometry/dimensionFile config/geometry/dimensions_Nucleus.dat
+#/geometry/cryostatWallFile config/geometry/cryostatWall_Nucleus.dat
+#/geometry/cryoPlateFile config/geometry/cryoPlates_Nucleus.dat
+#/geometry/cryoBeamFile config/geometry/cryostatBeams_Nucleus.dat
+/geometry/construct
+
+/run/initialize
+/tracking/verbose 1
+
+/run/printProgress 1
+
+/gps/particle geantino
+/gps/direction 1 1 0
+/gps/position 0 0 0
+/gps/energy 1 keV
+
+/run/beamOn 1
+
+/gps/direction 1 1 0
+/run/beamOn 1
+
