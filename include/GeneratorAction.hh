@@ -62,6 +62,8 @@ public:
     void SetWallZ(G4double ival);
     // enter the z_length of the wall
 
+    void SetBoxCenter(G4ThreeVector boxCenter);
+
 
     void ConfineOnWall();
         // When this method is called, it is assumed that the primary particle position is on the surface of the wall.
@@ -108,6 +110,8 @@ private:
     G4double wall_y;
     G4double wall_z;
         // Dimentions of the experimental hall.
+
+    G4ThreeVector center;
 
     G4Box* world;
         // Pointer to the experimental hall object. Used to randomly sample surface points.

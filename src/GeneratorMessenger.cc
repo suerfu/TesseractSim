@@ -57,6 +57,14 @@ GeneratorMessenger::GeneratorMessenger( GeneratorAction* generator )  : G4UImess
 		cmdSetWall_z->SetDefaultUnit("m");
 		cmdSetWall_z->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+
+		CmdBoxCenter = new G4UIcmdWith3VectorAndUnit("/generator/wall_center_position",this);
+		CmdBoxCenter->SetGuidance("Set the center position of the wall");
+		CmdBoxCenter->SetParameterName("XCenter","YCenter","ZCenter",false);
+		CmdBoxCenter->SetUnitCategory("Length");
+		CmdBoxCenter->SetDefaultUnit("m");
+		CmdBoxCenter->AvailableForStates(G4State_PreInit, G4State_Idle);
+
     //cmdSetPosition = new G4UIcmdWithoutParameter("/generator/setPos", this);
     //cmdSetPosition->SetGuidance("Set the position of next primary vertex from ROOT file.");
     //cmdSetPosition->AvailableForStates(G4State_PreInit, G4State_Idle);
@@ -84,6 +92,7 @@ GeneratorMessenger::~GeneratorMessenger(){
 		delete cmdSetWall_x;
 		delete cmdSetWall_y;
 		delete cmdSetWall_z;
+		delete CmdBoxCenter;
     //delete cmdSetPosition;
     //delete cmdSetDir;
     //delete cmdSetEnergy;
@@ -114,6 +123,9 @@ void GeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValue){
 	if( command == cmdSetWall_z){
 		 		 primaryGenerator->SetWallZ(cmdSetWall_z->GetNewDoubleValue(newValue));
 		  }
+	if( command == CmdBoxCenter){
+				 primaryGenerator->SetBoxCenter(CmdBoxCenter->ConvertToDimensioned3Vector(newValue));
+		 }
 
 // if( command == cmdSetEnergy ){
 //				primaryGenerator->SetEnergy();

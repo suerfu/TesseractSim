@@ -19,7 +19,7 @@
 
 # Initialize kernel
 /run/initialize
-/tracking/verbose 0
+/tracking/verbose 2
 
 /filter/recordWhenHit virtualDetector
 /filter/killWhenHit virtualDetector
@@ -31,12 +31,13 @@
 #/generator/spectrum config/generator/rockNeutronUnat.root
 #/generator/spectrum config/generator/rockNeutronTh232.root
 /generator/particle gamma
-/generator/particle geantino
-#can Specify:Top,Bottom,SideRight,SideRight,Front,Back, All?
+#/generator/particle geantino
+#can Specify:Top,Bottom,SideRight,SideRight,Front,Back, All
 /generator/surfacename SideRight
 /generator/wall_x 3 m
 /generator/wall_y 3 m
 /generator/wall_z 3 m
+/generator/wall_center_position 0 0 0 m
 
 #Using gps
 #/gps/particle ion

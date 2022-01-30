@@ -56,6 +56,8 @@ GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGenerato
     wall_y = 12*m;
     wall_z = 3.2*m;
 
+    center = {0,0,0};
+
     world = 0;
 }
 
@@ -71,38 +73,38 @@ GeneratorAction::~GeneratorAction(){
     delete world;
 }
 
-G4ThreeVector SetPosition(int surface, double wall_x,double wall_y,double wall_z){
+G4ThreeVector SetPosition(int surface, double wall_x,double wall_y,double wall_z, G4ThreeVector center){
   switch(surface)
           {
               case 0: //Top XY, Z > 0
                   return G4ThreeVector(CLHEP::RandFlat::shoot(-wall_x/2.0,wall_x/2.0),CLHEP::RandFlat::shoot(-wall_y/2.0,wall_y/2.0),
-                                                           wall_z/2.0);
+                                                           wall_z/2.0) + center ;
 
               case 1: //Bottom XY, Z < 0
                   return G4ThreeVector(CLHEP::RandFlat::shoot(-wall_x/2.0,wall_x/2.0),CLHEP::RandFlat::shoot(-wall_y/2.0,wall_y/2.0),
-                                                           -wall_z/2.0);
+                                                           -wall_z/2.0)+center;
 
               case 2: //SideRight,  XZ, Y > 0
                   return G4ThreeVector(CLHEP::RandFlat::shoot(-wall_x/2.0,wall_x/2.0),
                                                        wall_y/2.0,
-                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0));
+                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0))+center;
 
 
               case 3: //SideLeft, // XZ, Y < 0
                    return G4ThreeVector( CLHEP::RandFlat::shoot(-wall_x/2.0,wall_x/2.0),-wall_y/2.0,
-                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0));
+                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0))+center;
 
 
 
               case 4: //Front YZ, X > 0
                    return G4ThreeVector(wall_x/2.0, CLHEP::RandFlat::shoot(-wall_y/2.0,wall_y/2.0),
-                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0));
+                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0))+center;
 
 
 
               case  5: //Back YZ, X < 0
                   return G4ThreeVector(-wall_x/2.0,CLHEP::RandFlat::shoot(-wall_y/2.0,wall_y/2.0),
-                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0));
+                                                      CLHEP::RandFlat::shoot(-wall_z/2.0,wall_z/2.0))+center;
            }
     //fgun->SetParticlePosition( G4ThreeVector(x,y,z) );
 }
@@ -143,6 +145,43 @@ G4ThreeVector SetDirection(int surface, G4double Theta ){
     //fgun->SetParticleMomentumDirection( G4ThreeVector(px,py,pz) );
 }
 
+G4double GetTotalSurfaceArea(G4double wall_x,G4double wall_y,G4double wall_z) {
+  return 2*(wall_y*wall_z + wall_x*wall_y + wall_z*wall_x);
+}
+
+int GetRandomSurfaceIndex(G4double wall_x,G4double wall_y,G4double wall_z){
+
+
+  G4double Total_Area=GetTotalSurfaceArea(wall_x,wall_y,wall_z);
+
+  G4double Top = wall_x * wall_y/Total_Area;
+  G4double Bottom = wall_x * wall_y/Total_Area + Top ;
+  G4double SideRight = wall_x * wall_z/Total_Area + Bottom;
+  G4double SideLeft = wall_x * wall_z/Total_Area + SideRight;
+  G4double Front = wall_y * wall_z/Total_Area + SideLeft;
+  G4double Back = wall_y * wall_z/Total_Area + Front;
+
+  double a = CLHEP::RandFlat::shoot(0.0,1.0);
+
+  int index;
+
+  if (a<Top) {
+    index=0;
+  } else if (Top<=a && a<Bottom) {
+    index=1;
+  } else if (Bottom<=a && a<SideRight) {
+    index=2;
+  } else if (SideRight<=a && a<SideLeft) {
+    index=3;
+  } else if (SideLeft<=a && a<Front) {
+    index=4;
+  }else{
+    index=5;
+  }
+return index;
+
+}
+
 
 G4double SetEnergy(G4double E){
     return E * keV;
@@ -172,9 +211,14 @@ void GeneratorAction::SetConversionSurfaceNameToIndex(G4String str){
   }
   else if (str == "Back") {
     surface_index=5;
-  }else {
-    surface_index=0;
-    cout<<"Selected surface is "<<str<< "is not found, thus default option Top is selected"<<endl;
+  }
+  else if(str == "All") {
+    surface_index=6;//All
+    cout<<"Selected surface is the whole cubic surface"<<endl;
+  }
+  else {
+    surface_index=6;
+    cout<<"Didnot match any available option, thus selected the default option of generating particles from all the surface"<<endl;
   }
 }
 
@@ -191,6 +235,11 @@ void GeneratorAction::SetWallY(G4double ival)
 void GeneratorAction::SetWallZ(G4double ival)
 {
   wall_z = ival;
+}
+
+void GeneratorAction::SetBoxCenter(G4ThreeVector boxCenter)
+{
+  center = boxCenter;
 }
 
 
@@ -230,8 +279,14 @@ void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
 
     if( sample==true ){
         h1->GetRandom2(E,Theta);
-        fgun->SetParticlePosition( SetPosition(surface_index, wall_x,wall_y,wall_z) );
-        fgun->SetParticleMomentumDirection( SetDirection(surface_index,Theta) );
+        if (surface_index==6) {
+          int random_surface_index=GetRandomSurfaceIndex(wall_x,wall_y,wall_z);
+          fgun->SetParticlePosition( SetPosition(random_surface_index, wall_x,wall_y,wall_z,center) );
+          fgun->SetParticleMomentumDirection( SetDirection(random_surface_index,Theta) );
+        } else {
+          fgun->SetParticlePosition( SetPosition(surface_index, wall_x,wall_y,wall_z,center) );
+          fgun->SetParticleMomentumDirection( SetDirection(surface_index,Theta) );
+        }
         fgun->SetParticleEnergy(SetEnergy(E));
         fgun->SetParticleDefinition( G4ParticleTable::GetParticleTable()->FindParticle( particle ) );
         fgun->GeneratePrimaryVertex(anEvent);
