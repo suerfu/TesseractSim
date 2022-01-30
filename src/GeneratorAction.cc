@@ -145,7 +145,7 @@ G4ThreeVector SetDirection(int surface, G4double Theta ){
 
 
 G4double SetEnergy(G4double E){
-    return E;
+    return E * keV;
 }
 
 void GeneratorAction::SetParticleName( G4String str ){

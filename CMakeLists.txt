@@ -59,6 +59,8 @@ set(SCRIPTS
   /macros/icons.mac
   /macros/test.mac
   /macros/rock.mac
+  /macros/geantino.mac
+  /macros/virtualDetector_WallGenerator.mac
   /config/geometry/cryoPlates_Ricochet.dat
   /config/geometry/cryostatBeams_Ricochet.dat
   /config/geometry/cryostatWall_Ricochet.dat
