@@ -60,6 +60,11 @@ set(SCRIPTS
   /macros/test.mac
   /macros/rock.mac
   /macros/geantino.mac
+  /macros/Flux_gamma_K40.mac
+  /macros/Flux_gamma_Th232.mac
+  /macros/Flux_gamma_U238.mac
+  /macros/Flux_neutron_Th232.mac
+  /macros/Flux_neutron_Unat.mac
   /macros/virtualDetector_WallGenerator.mac
   /config/geometry/cryoPlates_Ricochet.dat
   /config/geometry/cryostatBeams_Ricochet.dat

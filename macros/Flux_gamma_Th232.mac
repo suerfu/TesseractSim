@@ -1,0 +1,53 @@
+# Macro file for the initialization
+# in interactive session
+
+#Set geometry
+# 100 TESSERACT with virtual detector
+# 101           with HeRALD detector (not implemented yet)
+# 102           with SPICE  detector (not implemented yet)
+# 200 Rock
+/geometry/type 100
+/geometry/dimensionFile /config/geometry/dimensions_Ricochet.dat
+/geometry/cryostatWallFile /config/geometry/cryostatWall_Ricochet.dat
+/geometry/cryoPlateFile /config/geometry/cryoPlates_Ricochet.dat
+/geometry/cryoBeamFile /config/geometry/cryostatBeams_Ricochet.dat
+#/geometry/dimensionFile config/geometry/dimensions_Nucleus.dat
+#/geometry/cryostatWallFile config/geometry/cryostatWall_Nucleus.dat
+#/geometry/cryoPlateFile config/geometry/cryoPlates_Nucleus.dat
+#/geometry/cryoBeamFile config/geometry/cryostatBeams_Nucleus.dat
+/geometry/construct
+
+# Initialize kernel
+/run/initialize
+/tracking/verbose 0
+
+/control/getEnv a
+/control/getEnv b
+
+/random/setSeeds {a} {b}
+
+/filter/recordWhenHit virtualDetector
+/filter/killWhenHit virtualDetector
+
+#Using the wall generator
+#/generator/spectrum /config/generator/rockGammaK40.root
+#/generator/spectrum /config/generator/rockGammaU238.root
+/generator/spectrum /config/generator/rockGammaTh232.root
+#/generator/spectrum /config/generator/rockNeutronUnat.root
+#/generator/spectrum /config/generator/rockNeutronTh232.root
+/generator/particle gamma
+#/generator/particle neutron
+#/generator/particle geantino
+#can Specify:Top,Bottom,SideRight,SideRight,Front,Back, All
+/generator/surfacename All
+/generator/wall_x 1.5 m
+/generator/wall_y 1.5 m
+/generator/wall_z 2.1 m
+/generator/wall_center_position 0 0 0.2 m
+
+#Using gps
+#/gps/particle ion
+#/gps/energy 0 keV
+
+/run/printProgress 1000000
+/run/beamOn 100000000
