@@ -128,7 +128,7 @@ std::vector<T> GetCmdOptionArray(int argc, char** argv, const std::string& optio
 
 void Usage()
 {
-    cout << "Usage: ReSampler -i <SimuOuputFilename_1.root> ... <SimuOuputFilename_N.root> -v <volume_name_surfaceflux> -o <ouput_filename>" << endl;
+    cout << "Usage: RockSpecAnalyzer -i <SimuOuputFilename_1.root> ... <SimuOuputFilename_N.root> -v <volume_name_surfaceflux> -o <ouput_filename>" << endl;
     cout << endl;
 }
 
@@ -154,36 +154,38 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    string outputFilename = "ReSampler_output.root";
+    string outputFilename = "RockSpecAnalyzer_output.root";
     if(CmdOptionExists(argc, argv, "-o"))
     {
         outputFilename = GetCmdOption<string>(argc, argv, "-o");
     }
     else
     {
-        cout<<"outputfilename not specified, default option is set to ReSampler_output.root "<<endl;
+        cout<<"outputfilename not specified, default option is set to RockSpecAnalyzer_output.root "<<endl;
     }
 
-    string main_volume = "ImaginaryVacuum";
+    string main_volume = "virtualDetector";
     if(CmdOptionExists(argc, argv, "-v"))
     {
         main_volume = GetCmdOption<string>(argc, argv, "-v");
     }
     else
     {
-        cout<<"Particle name not specified, default option is set to ImaginaryVacuum"<<endl;
+        cout<<"Particle name not specified, default option is set to virtualDetector"<<endl;
     }
 
 
 
     TFile *outputfile = new TFile(outputFilename.c_str(),"RECREATE");
     TTree *events= new TTree("events","simple tree");
-    Double_t t,rx,ry,rz,Parent_rx,Parent_ry,Parent_rz,px,py,pz,Eki,Ekf,Parent_px,Parent_py,Parent_pz,Parent_energy;
-    Int_t eventID, index, multiplicity;
-    char volume[16], particle[16], parentparticle[16];
 
-    Double_t ARt[20],ARrx[20],ARry[20],ARrz[20],ARpx[20],ARpy[20],ARpz[20],AREki[20],AREkf[20],ARParentrx[20],ARParentry[20],ARParentrz[20],
-              ARParentpx[20],ARParentpy[20],ARParentpz[20],ARParentEnergy[20];
+
+    Double_t t,rx,ry,rz,parent_rx,parent_ry,parent_rz,px,py,pz,Eki,parent_px,parent_py,parent_pz,parent_Eki;
+    Int_t eventID, index, multiplicity;
+    char volume[16], particle[16], parentParticle[16];
+
+    Double_t ARt[20],ARrx[20],ARry[20],ARrz[20],ARpx[20],ARpy[20],ARpz[20],AREki[20],ARParentrx[20],ARParentry[20],ARParentrz[20],
+              ARParentpx[20],ARParentpy[20],ARParentpz[20],ARParentEki[20];
     Int_t AReventID[20];
     char ARvolume[20][16], ARparticle[20][16],ARParent[20][16];
 
@@ -195,18 +197,16 @@ int main(int argc, char* argv[])
     events->Branch("py",&py,"py/D");
     events->Branch("pz",&pz,"pz/D");
     events->Branch("Eki",&Eki,"Eki/D");
-    events->Branch("Ekf",&Ekf,"Ekf/D");
     events->Branch("eventID",&eventID,"eventID/I");
-    events->Branch("volume",volume,"volume[16]/C");
     events->Branch("particle",particle,"particle[16]/C");
-    events->Branch("parentparticle",parentparticle,"parentparticle[16]/C");
-    events->Branch("Parent_rx",&Parent_rx,"Parent_rx/D");
-    events->Branch("Parent_ry",&Parent_ry,"Parent_ry/D");
-    events->Branch("Parent_rz",&Parent_rz,"Parent_rz/D");
-    events->Branch("Parent_px",&Parent_px,"Parent_px/D");
-    events->Branch("Parent_py",&Parent_py,"Parent_py/D");
-    events->Branch("Parent_pz",&Parent_pz,"Parent_pz/D");
-    events->Branch("Parent_energy",&Parent_energy,"Parent_energy/D");
+    events->Branch("parentParticle",parentParticle,"parentParticle[16]/C");
+    events->Branch("parent_rx",&parent_rx,"parent_rx/D");
+    events->Branch("parent_ry",&parent_ry,"parent_ry/D");
+    events->Branch("parent_rz",&parent_rz,"parent_rz/D");
+    events->Branch("parent_px",&parent_px,"parent_px/D");
+    events->Branch("parent_py",&parent_py,"parent_py/D");
+    events->Branch("parent_pz",&parent_pz,"parent_pz/D");
+    events->Branch("parent_Eki",&parent_Eki,"parent_Eki/D");
     events->Branch("multiplicity",&multiplicity,"multiplicity/I");
     events->Branch("index",&index,"index/I");
 
@@ -218,9 +218,12 @@ for(const string& filename : inputFilenames){
   Printf("file -> %s", filename.c_str());
   //TFile* f = TFile::Open(filename.c_str());
   TFile* f = new TFile(filename.c_str());
+
   if( !f->IsOpen() ){
          cout<< "Error opening " << filename.c_str() <<endl;
-  } else {
+  }
+  else {
+
     if(f->IsZombie()) {
       cout<<"The file "<<filename.c_str()<<"is corrupted"<<endl;
       continue;
@@ -230,9 +233,8 @@ for(const string& filename : inputFilenames){
       Int_t nentries = (Int_t)t1->GetEntries();
       //cout<<nentries<<endl;
 
-      Double_t time,X_pos,Y_pos,Z_pos,X_mom,Y_mom,Z_mom, Intial_E, Final_E;
+      Double_t time,X_pos,Y_pos,Z_pos,X_mom,Y_mom,Z_mom, Intial_E;
       Int_t event_ID,track_ID, step_ID, parent_ID;
-      //string Vol_ID,Particle_ID;
       char Vol_ID[16], NextVol_ID[16], Particle_ID[16], Process_ID[16];
 
       Double_t Temp_X_pos,Temp_Y_pos,Temp_Z_pos,Temp_X_mom,Temp_Y_mom,Temp_Z_mom,Temp_Energy;
@@ -254,7 +256,6 @@ for(const string& filename : inputFilenames){
       t1->SetBranchAddress("pz",&Z_mom);
       t1->SetBranchAddress("t",&time);
       t1->SetBranchAddress("Eki",&Intial_E);
-      t1->SetBranchAddress("Ekf",&Final_E);
       t1->SetBranchAddress("process",Process_ID);
 
       for(Int_t q=0;q<nentries;q++){
@@ -287,7 +288,6 @@ for(const string& filename : inputFilenames){
             ARpy[Multiplicity]=Y_mom;
             ARpz[Multiplicity]=Z_mom;
             AREki[Multiplicity]=Intial_E;
-            AREkf[Multiplicity]=Final_E;
             AReventID[Multiplicity]=event_ID;
             ARParentrx[Multiplicity]=Temp_X_pos;
             ARParentry[Multiplicity]=Temp_Y_pos;
@@ -295,7 +295,7 @@ for(const string& filename : inputFilenames){
             ARParentpx[Multiplicity]=Temp_X_mom;
             ARParentpy[Multiplicity]=Temp_Y_mom;
             ARParentpz[Multiplicity]=Temp_Z_mom;
-            ARParentEnergy[Multiplicity]=Temp_Energy;
+            ARParentEki[Multiplicity]=Temp_Energy;
             strncpy(ARvolume[Multiplicity], Vol_ID, 16);
             strncpy(ARparticle[Multiplicity], Particle_ID, 16);
             strncpy(ARParent[Multiplicity], Temp_particle, 16);
@@ -319,17 +319,16 @@ for(const string& filename : inputFilenames){
               py= ARpy[i];
               pz= ARpz[i];
               Eki=AREki[i];
-              Ekf=AREkf[i];
               strncpy(volume, ARvolume[i], 16);
               strncpy(particle, ARparticle[i], 16);
-              Parent_rx=ARParentrx[i];
-              Parent_ry=ARParentry[i];
-              Parent_rz=ARParentrz[i];
-              Parent_px=ARParentpx[i];
-              Parent_py=ARParentpy[i];
-              Parent_pz=ARParentpz[i];
-              Parent_energy=ARParentEnergy[i];
-              strncpy(parentparticle, ARParent[i], 16);
+              parent_rx=ARParentrx[i];
+              parent_ry=ARParentry[i];
+              parent_rz=ARParentrz[i];
+              parent_px=ARParentpx[i];
+              parent_py=ARParentpy[i];
+              parent_pz=ARParentpz[i];
+              parent_Eki=ARParentEki[i];
+              strncpy(parentParticle, ARParent[i], 16);
               events->Fill();
             }
             Multiplicity=0;
