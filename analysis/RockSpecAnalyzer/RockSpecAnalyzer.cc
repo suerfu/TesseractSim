@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        cout<<"outputfilename not specified, default option is set to RockSpecAnalyzer_output.root "<<endl;
+        cout<<"Output Filename not specified, default option is set to RockSpecAnalyzer_output.root "<<endl;
     }
 
     string main_volume = "virtualDetector";
@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        cout<<"Particle name not specified, default option is set to virtualDetector"<<endl;
+        cout<<"Volume name not specified, default option is set to virtualDetector"<<endl;
     }
 
 
