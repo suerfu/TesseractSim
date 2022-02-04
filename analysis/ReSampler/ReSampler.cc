@@ -176,34 +176,39 @@ int main(int argc, char* argv[])
 
 
 
-TFile *outputfile = new TFile(outputFilename.c_str(),"RECREATE");
-TTree *events= new TTree("events","simple tree");
-Double_t t,rx,ry,rz,Parent_rx,Parent_ry,Parent_rz,px,py,pz,Eki,Ekf;
-Int_t eventID, index, multiplicity;
-char volume[16], particle[16], parentparticle[16];
+    TFile *outputfile = new TFile(outputFilename.c_str(),"RECREATE");
+    TTree *events= new TTree("events","simple tree");
+    Double_t t,rx,ry,rz,Parent_rx,Parent_ry,Parent_rz,px,py,pz,Eki,Ekf,Parent_px,Parent_py,Parent_pz,Parent_energy;
+    Int_t eventID, index, multiplicity;
+    char volume[16], particle[16], parentparticle[16];
 
-Double_t ARt[20],ARrx[20],ARry[20],ARrz[20],ARpx[20],ARpy[20],ARpz[20],AREki[20],AREkf[20],ARParentrx[20],ARParentry[20],ARParentrz[20];
-Int_t AReventID[20];
-char ARvolume[20][16], ARparticle[20][16],ARParent[20][16];
+    Double_t ARt[20],ARrx[20],ARry[20],ARrz[20],ARpx[20],ARpy[20],ARpz[20],AREki[20],AREkf[20],ARParentrx[20],ARParentry[20],ARParentrz[20],
+              ARParentpx[20],ARParentpy[20],ARParentpz[20],ARParentEnergy[20];
+    Int_t AReventID[20];
+    char ARvolume[20][16], ARparticle[20][16],ARParent[20][16];
 
-events->Branch("t",&t,"t/D");
-events->Branch("rx",&rx,"rx/D");
-events->Branch("ry",&ry,"ry/D");
-events->Branch("rz",&rz,"rz/D");
-events->Branch("px",&px,"px/D");
-events->Branch("py",&py,"py/D");
-events->Branch("pz",&pz,"pz/D");
-events->Branch("Eki",&Eki,"Eki/D");
-events->Branch("Ekf",&Ekf,"Ekf/D");
-events->Branch("eventID",&eventID,"eventID/I");
-events->Branch("volume",volume,"volume[16]/C");
-events->Branch("particle",particle,"particle[16]/C");
-events->Branch("parentparticle",parentparticle,"parentparticle[16]/C");
-events->Branch("Parent_rx",&Parent_rx,"Parent_rx/D");
-events->Branch("Parent_ry",&Parent_ry,"Parent_ry/D");
-events->Branch("Parent_rz",&Parent_rz,"Parent_rz/D");
-events->Branch("multiplicity",&multiplicity,"multiplicity/I");
-events->Branch("index",&index,"index/I");
+    events->Branch("t",&t,"t/D");
+    events->Branch("rx",&rx,"rx/D");
+    events->Branch("ry",&ry,"ry/D");
+    events->Branch("rz",&rz,"rz/D");
+    events->Branch("px",&px,"px/D");
+    events->Branch("py",&py,"py/D");
+    events->Branch("pz",&pz,"pz/D");
+    events->Branch("Eki",&Eki,"Eki/D");
+    events->Branch("Ekf",&Ekf,"Ekf/D");
+    events->Branch("eventID",&eventID,"eventID/I");
+    events->Branch("volume",volume,"volume[16]/C");
+    events->Branch("particle",particle,"particle[16]/C");
+    events->Branch("parentparticle",parentparticle,"parentparticle[16]/C");
+    events->Branch("Parent_rx",&Parent_rx,"Parent_rx/D");
+    events->Branch("Parent_ry",&Parent_ry,"Parent_ry/D");
+    events->Branch("Parent_rz",&Parent_rz,"Parent_rz/D");
+    events->Branch("Parent_px",&Parent_px,"Parent_px/D");
+    events->Branch("Parent_py",&Parent_py,"Parent_py/D");
+    events->Branch("Parent_pz",&Parent_pz,"Parent_pz/D");
+    events->Branch("Parent_energy",&Parent_energy,"Parent_energy/D");
+    events->Branch("multiplicity",&multiplicity,"multiplicity/I");
+    events->Branch("index",&index,"index/I");
 
 
 
@@ -211,109 +216,138 @@ for(const string& filename : inputFilenames){
 
 
   Printf("file -> %s", filename.c_str());
-  TFile* f = TFile::Open(filename.c_str());
-  TTree *t1 = (TTree*)f->Get("events");
-  Int_t nentries = (Int_t)t1->GetEntries();
-  //cout<<nentries<<endl;
+  //TFile* f = TFile::Open(filename.c_str());
+  TFile* f = new TFile(filename.c_str());
+  if( !f->IsOpen() ){
+         cout<< "Error opening " << filename.c_str() <<endl;
+  } else {
+    if(f->IsZombie()) {
+      cout<<"The file "<<filename.c_str()<<"is corrupted"<<endl;
+      continue;
+    }
+    else{
+      TTree *t1 = (TTree*)f->Get("events");
+      Int_t nentries = (Int_t)t1->GetEntries();
+      //cout<<nentries<<endl;
 
-  Double_t time,X_pos,Y_pos,Z_pos,X_mom,Y_mom,Z_mom, Intial_E, Final_E;
-  Int_t event_ID,track_ID, step_ID, parent_ID;
-  //string Vol_ID,Particle_ID;
-  char Vol_ID[16], NextVol_ID[16], Particle_ID[16], Process_ID[16];
+      Double_t time,X_pos,Y_pos,Z_pos,X_mom,Y_mom,Z_mom, Intial_E, Final_E;
+      Int_t event_ID,track_ID, step_ID, parent_ID;
+      //string Vol_ID,Particle_ID;
+      char Vol_ID[16], NextVol_ID[16], Particle_ID[16], Process_ID[16];
 
-  Double_t Temp_X_pos,Temp_Y_pos,Temp_Z_pos;
-  char Temp_particle[16];
-  Int_t index_arr=0,Multiplicity=0;
+      Double_t Temp_X_pos,Temp_Y_pos,Temp_Z_pos,Temp_X_mom,Temp_Y_mom,Temp_Z_mom,Temp_Energy;
+      char Temp_particle[16];
+      Int_t index_arr=0,Multiplicity=0;
 
-  t1->SetBranchAddress("eventID",&event_ID);
-  t1->SetBranchAddress("trackID",&track_ID);
-  t1->SetBranchAddress("particle",Particle_ID);
-  t1->SetBranchAddress("parentID",&parent_ID);
-  t1->SetBranchAddress("stepID",&step_ID);
-  t1->SetBranchAddress("volume",Vol_ID);
-  t1->SetBranchAddress("nextVolume",NextVol_ID);
-  t1->SetBranchAddress("rx",&X_pos);
-  t1->SetBranchAddress("ry",&Y_pos);
-  t1->SetBranchAddress("rz",&Z_pos);
-  t1->SetBranchAddress("px",&X_mom);
-  t1->SetBranchAddress("py",&Y_mom);
-  t1->SetBranchAddress("pz",&Z_mom);
-  t1->SetBranchAddress("t",&time);
-  t1->SetBranchAddress("Eki",&Intial_E);
-  t1->SetBranchAddress("Ekf",&Final_E);
-  t1->SetBranchAddress("process",Process_ID);
+      t1->SetBranchAddress("eventID",&event_ID);
+      t1->SetBranchAddress("trackID",&track_ID);
+      t1->SetBranchAddress("particle",Particle_ID);
+      t1->SetBranchAddress("parentID",&parent_ID);
+      t1->SetBranchAddress("stepID",&step_ID);
+      t1->SetBranchAddress("volume",Vol_ID);
+      t1->SetBranchAddress("nextVolume",NextVol_ID);
+      t1->SetBranchAddress("rx",&X_pos);
+      t1->SetBranchAddress("ry",&Y_pos);
+      t1->SetBranchAddress("rz",&Z_pos);
+      t1->SetBranchAddress("px",&X_mom);
+      t1->SetBranchAddress("py",&Y_mom);
+      t1->SetBranchAddress("pz",&Z_mom);
+      t1->SetBranchAddress("t",&time);
+      t1->SetBranchAddress("Eki",&Intial_E);
+      t1->SetBranchAddress("Ekf",&Final_E);
+      t1->SetBranchAddress("process",Process_ID);
 
-  for(Int_t q=0;q<nentries;q++){
-      t1->GetEntry(q);
-      Int_t n_secondary;
-      std::string Volume(Vol_ID);
-      std::string NextVolume(NextVol_ID);
-      std::string Particle(Particle_ID);
-      std::string Process(Process_ID);
+      for(Int_t q=0;q<nentries;q++){
+          t1->GetEntry(q);
+          Int_t n_secondary;
+          std::string Volume(Vol_ID);
+          std::string NextVolume(NextVol_ID);
+          std::string Particle(Particle_ID);
+          std::string Process(Process_ID);
 
-      if ( (parent_ID==0 && Process=="initStep") ) {
-        Temp_X_pos=X_pos;
-        Temp_Y_pos=Y_pos;
-        Temp_Z_pos=Z_pos;
-        strncpy(Temp_particle, Particle_ID, 16);
+          if ( (parent_ID==0 && Process=="initStep") ) {
+            Temp_X_pos=X_pos;
+            Temp_Y_pos=Y_pos;
+            Temp_Z_pos=Z_pos;
+            Temp_X_mom=X_mom;
+            Temp_Y_mom=Y_mom;
+            Temp_Z_mom=Z_mom;
+            Temp_Energy=Intial_E;
+            strncpy(Temp_particle, Particle_ID, 16);
 
-        //cout<<event_ID<<"     "<<track_ID<<"   "<<step_ID<<" "<<Particle<<"   "<<Volume<<"    "<<Process<<"    "<<parent_ID<<endl;
-      }
+            //cout<<event_ID<<"     "<<track_ID<<"   "<<step_ID<<" "<<Particle<<"   "<<Volume<<"    "<<Process<<"    "<<parent_ID<<endl;
+          }
 
-      if ( Volume.compare(main_volume)==0 && NextVolume == "OutOfWorld" ){
-        ARt[Multiplicity]=time;
-        ARrx[Multiplicity]=X_pos;
-        ARry[Multiplicity]=Y_pos;
-        ARrz[Multiplicity]=Z_pos;
-        ARpx[Multiplicity]=X_mom;
-        ARpy[Multiplicity]=Y_mom;
-        ARpz[Multiplicity]=Z_mom;
-        AREki[Multiplicity]=Intial_E;
-        AREkf[Multiplicity]=Final_E;
-        AReventID[Multiplicity]=event_ID;
-        ARParentrx[Multiplicity]=Temp_X_pos;
-        ARParentry[Multiplicity]=Temp_Y_pos;
-        ARParentrz[Multiplicity]=Temp_Z_pos;
-        strncpy(ARvolume[Multiplicity], Vol_ID, 16);
-        strncpy(ARparticle[Multiplicity], Particle_ID, 16);
-        strncpy(ARParent[Multiplicity], Temp_particle, 16);
-        Multiplicity++;
-
-
-        //cout<<event_ID<<"     "<<track_ID<<"   "<<step_ID<<" "<<Particle<<"   "<<Volume<<"    "<<Process<<"    "<<parent_ID<<endl;
-      }
-
-      if ( (q!=0 && Process=="newEvent") || (q==nentries-1 && Process=="timeReset")   ) {
-        //cout<<Multiplicity<<endl;
-        for (Int_t i = 0; i < Multiplicity; i++) {
-          eventID=AReventID[Multiplicity];
-          multiplicity=Multiplicity;
-          index=i;
-          t=ARt[i];
-          rx=ARrx[i];
-          ry=ARry[i];
-          rz=ARrz[i];
-          px= ARpx[i];
-          py= ARpy[i];
-          pz= ARpz[i];
-          Eki=AREki[i];
-          Ekf=AREkf[i];
-          strncpy(volume, ARvolume[i], 16);
-          strncpy(particle, ARparticle[i], 16);
-          Parent_rx=ARParentrx[i];
-          Parent_ry=ARParentry[i];
-          Parent_rz=ARParentrz[i];
-          strncpy(parentparticle, ARParent[i], 16);
-          events->Fill();
-        }
-        Multiplicity=0;
-        index_arr=0;
-      }
-
-    }//loop over nentries
+          if ( Volume.compare(main_volume)==0){
+            ARt[Multiplicity]=time;
+            ARrx[Multiplicity]=X_pos;
+            ARry[Multiplicity]=Y_pos;
+            ARrz[Multiplicity]=Z_pos;
+            ARpx[Multiplicity]=X_mom;
+            ARpy[Multiplicity]=Y_mom;
+            ARpz[Multiplicity]=Z_mom;
+            AREki[Multiplicity]=Intial_E;
+            AREkf[Multiplicity]=Final_E;
+            AReventID[Multiplicity]=event_ID;
+            ARParentrx[Multiplicity]=Temp_X_pos;
+            ARParentry[Multiplicity]=Temp_Y_pos;
+            ARParentrz[Multiplicity]=Temp_Z_pos;
+            ARParentpx[Multiplicity]=Temp_X_mom;
+            ARParentpy[Multiplicity]=Temp_Y_mom;
+            ARParentpz[Multiplicity]=Temp_Z_mom;
+            ARParentEnergy[Multiplicity]=Temp_Energy;
+            strncpy(ARvolume[Multiplicity], Vol_ID, 16);
+            strncpy(ARparticle[Multiplicity], Particle_ID, 16);
+            strncpy(ARParent[Multiplicity], Temp_particle, 16);
+            Multiplicity++;
 
 
-  f->Close();
+            //cout<<event_ID<<"     "<<track_ID<<"   "<<step_ID<<" "<<Particle<<"   "<<Volume<<"    "<<Process<<"    "<<parent_ID<<endl;
+          }
+
+          if ( (q!=0 && Process=="newEvent") || (q==nentries-1 && Process=="timeReset")   ) {
+            //cout<<Multiplicity<<endl;
+            for (Int_t i = 0; i < Multiplicity; i++) {
+              eventID=AReventID[Multiplicity];
+              multiplicity=Multiplicity;
+              index=i;
+              t=ARt[i];
+              rx=ARrx[i];
+              ry=ARry[i];
+              rz=ARrz[i];
+              px= ARpx[i];
+              py= ARpy[i];
+              pz= ARpz[i];
+              Eki=AREki[i];
+              Ekf=AREkf[i];
+              strncpy(volume, ARvolume[i], 16);
+              strncpy(particle, ARparticle[i], 16);
+              Parent_rx=ARParentrx[i];
+              Parent_ry=ARParentry[i];
+              Parent_rz=ARParentrz[i];
+              Parent_px=ARParentpx[i];
+              Parent_py=ARParentpy[i];
+              Parent_pz=ARParentpz[i];
+              Parent_energy=ARParentEnergy[i];
+              strncpy(parentparticle, ARParent[i], 16);
+              events->Fill();
+            }
+            Multiplicity=0;
+            index_arr=0;
+          }
+
+        }//loop over nentries
+
+
+      f->Close();
+
+    }//2nd else
+
+
+
+  }//1st else
+
+
 }//loop over all the files
 
 outputfile->Write();
