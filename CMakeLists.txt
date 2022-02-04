@@ -4,7 +4,7 @@
 # Setup the project
 #
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(DetectorTemplate)
+project(TesseractSim)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -44,12 +44,12 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4, ROOT libraries
 #
-add_executable(DetectorTemplate DetectorTemplate.cc ${sources} ${headers})
-target_link_libraries(DetectorTemplate ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
+add_executable(TesseractSim TesseractSim.cc ${sources} ${headers})
+target_link_libraries(TesseractSim ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
-# build DetectorTemplate. This is so that we can run the executable directly because it
+# build TesseractSim. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
 set(SCRIPTS
@@ -60,11 +60,16 @@ set(SCRIPTS
   /macros/test.mac
   /macros/rock.mac
   /macros/geantino.mac
-  /macros/Flux_gamma_K40.mac
-  /macros/Flux_gamma_Th232.mac
-  /macros/Flux_gamma_U238.mac
-  /macros/Flux_neutron_Th232.mac
-  /macros/Flux_neutron_Unat.mac
+  /macros/rock_gamma_K40.mac
+  /macros/rock_gamma_Th232.mac
+  /macros/rock_gamma_U238.mac
+  /macros/rock_neutron_Th232.mac
+  /macros/rock_neutron_Unat.mac
+  /macros/wall_gamma_K40.mac
+  /macros/wall_gamma_Th232.mac
+  /macros/wall_gamma_U238.mac
+  /macros/wall_neutron_Th232.mac
+  /macros/wall_neutron_Unat.mac
   /macros/virtualDetector_WallGenerator.mac
   /config/geometry/cryoPlates_Ricochet.dat
   /config/geometry/cryostatBeams_Ricochet.dat
@@ -92,4 +97,4 @@ endforeach()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS DetectorTemplate DESTINATION bin)
+install(TARGETS TesseractSim DESTINATION bin)

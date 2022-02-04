@@ -128,7 +128,8 @@ std::vector<T> GetCmdOptionArray(int argc, char** argv, const std::string& optio
 
 void Usage()
 {
-    cout << "Usage: RockSpecAnalyzer -i <SimuOuputFilename_1.root> ... <SimuOuputFilename_N.root> -v <volume_name_surfaceflux> -o <ouput_filename>" << endl;
+    cout << endl;
+    cout << "Usage: RockSpecAnalyzer -i <SimOuputFile1.root> ... <SimuOuputFileN.root> -v <volume_name_surfaceflux> -o <ouput_filename>" << endl;
     cout << endl;
 }
 
@@ -137,7 +138,7 @@ int main(int argc, char* argv[])
 {
 
 
-  if(CmdOptionExists(argc, argv, "-h"))
+  if(CmdOptionExists(argc, argv, "-h") || argc==1 )
    {
        Usage();
        return EXIT_SUCCESS;

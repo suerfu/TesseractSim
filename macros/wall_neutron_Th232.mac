@@ -7,10 +7,10 @@
 # 102           with SPICE  detector (not implemented yet)
 # 200 Rock
 /geometry/type 100
-/geometry/dimensionFile /config/geometry/dimensions_Ricochet.dat
-/geometry/cryostatWallFile /config/geometry/cryostatWall_Ricochet.dat
-/geometry/cryoPlateFile /config/geometry/cryoPlates_Ricochet.dat
-/geometry/cryoBeamFile /config/geometry/cryostatBeams_Ricochet.dat
+/geometry/dimensionFile config/geometry/dimensions_Ricochet.dat
+/geometry/cryostatWallFile config/geometry/cryostatWall_Ricochet.dat
+/geometry/cryoPlateFile config/geometry/cryoPlates_Ricochet.dat
+/geometry/cryoBeamFile config/geometry/cryostatBeams_Ricochet.dat
 #/geometry/dimensionFile config/geometry/dimensions_Nucleus.dat
 #/geometry/cryostatWallFile config/geometry/cryostatWall_Nucleus.dat
 #/geometry/cryoPlateFile config/geometry/cryoPlates_Nucleus.dat
@@ -33,8 +33,8 @@
 #/generator/spectrum /config/generator/rockGammaK40.root
 #/generator/spectrum /config/generator/rockGammaU238.root
 #/generator/spectrum /config/generator/rockGammaTh232.root
-/generator/spectrum /config/generator/rockNeutronUnat.root
-#/generator/spectrum /config/generator/rockNeutronTh232.root
+#/generator/spectrum /config/generator/rockNeutronUnat.root
+/generator/spectrum /config/generator/rockNeutronTh232.root
 #/generator/particle gamma
 /generator/particle neutron
 #/generator/particle geantino
