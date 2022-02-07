@@ -13,3 +13,6 @@ file( GLOB SOURCES "src/*.cpp" )
 add_executable( ProcessTrack ProcessTrack.cpp ${SOURCES} )
 target_link_libraries( ProcessTrack ${ROOT_LIBRARIES} )
 
+add_executable( RockSpecAnalyzer RockSpecAnalyzer.cpp )
+target_link_libraries( RockSpecAnalyzer ${ROOT_LIBRARIES} )
+
