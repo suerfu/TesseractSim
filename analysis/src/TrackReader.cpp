@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <set>
 
 using namespace std;
 
@@ -33,6 +34,7 @@ void TrackReader::ConfigureTTree( TTree* tree ){
     for( vector<string>::iterator itr1 = arrayAV.begin(); itr1!=arrayAV.end(); itr1++ ){
 
         string volumeName = *itr1;
+        cout << "Creating pulse array for Active Volume " << volumeName << endl;
         string edepName = string("edep_") + *itr1;
         string rootName = edepName + "/D";
             // rootName is name + ROOT data format.
@@ -48,7 +50,7 @@ void TrackReader::ConfigureTTree( TTree* tree ){
         vector<string>::iterator tmp = find(arrayVOI.begin(), arrayVOI.end(), *itr1);
         while( tmp!=arrayVOI.end() ){
             arrayVOI.erase( tmp );
-            vector<string>::iterator tmp = find(arrayVOI.begin(), arrayVOI.end(), *itr1);
+            tmp = find(arrayVOI.begin(), arrayVOI.end(), *itr1);
         }
     }
 
@@ -58,6 +60,7 @@ void TrackReader::ConfigureTTree( TTree* tree ){
     for( vector<string>::iterator itr1 = arrayVOI.begin(); itr1!=arrayVOI.end(); itr1++ ){
         
         string volumeName = *itr1;
+        cout << "Creating pulse array for VOI " << volumeName << endl;
         string edepName = string("edep_") + *itr1;
         string rootName = edepName + "/D";
             // rootName is name + ROOT data format.
@@ -86,6 +89,16 @@ bool TrackReader::NewEvent( char* name ){
 void TrackReader::Process( string outputStr, vector<string> inputStr ){
 
     // ==================================================
+    // Prepare VOI and PSD for writing trees
+    // ==================================================
+    //
+    // If no volume-of-interest is specified, iterate over the file to get all the volumes involved.
+    if( arrayVOI.empty()==true ){
+        cout << "Volume-of-Interest is empty. All volumes treated as VOI.\n"; 
+        arrayVOI = GetVOIFromFile( inputStr );
+    }
+
+    // ==================================================
     // Create ROOT file
     // ==================================================
     //
@@ -94,16 +107,6 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
     if( !outputFile ){
         cerr << "Error creating output file " << outputStr << endl;
         return;
-    }
-
-    // ==================================================
-    // Prepare VOI and PSD for writing trees
-    // ==================================================
-    //
-    // If no volume-of-interest is specified, iterate over the file to get all the volumes involved.
-    if( arrayVOI.empty()==true ){
-        cout << "Volume-of-Interest is empty. Will treat all volumes as VOI.\n"; 
-        arrayVOI = GetVOIFromFile( inputStr );
     }
 
     // ==================================================
@@ -129,6 +132,7 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
 
 void TrackReader::ProcessFile( TTree* tree, string input ){
 
+
     // ==================================================
     // Open the ROOT file to read and set branch variables
     // ==================================================
@@ -138,9 +142,6 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
         cerr << "ERROR reading file " << input << endl;
         cerr << "Skipping...\n";
         return;
-    }
-    else{
-        cout << "Processing " << input << endl;
     }
 
     strncpy( inputFileNameChar, input.c_str(), MAX_FILENAME_LEN-1 );
@@ -183,9 +184,6 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
 
             ProcessPulseArray( tree );
 
-            ID++;
-
-
             map<string, MCPulseArray>::iterator clr;
             for( clr=pulseArrayAV.begin(); clr!=pulseArrayAV.end(); clr++ ){
                 (clr->second).Clear();
@@ -200,6 +198,8 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
         // If yes, then put it in the energy deposit array to be processed later.
         //
         else{
+
+            eventID = rdata.eventID;
 
             if( rdata.Edep>1e-9 ){
 
@@ -216,7 +216,7 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
         }
     }
             
-    tree->Fill();
+    //tree->Fill();
 }
 
 
@@ -248,22 +248,23 @@ void TrackReader::ProcessPulseArray( TTree* tree ){
         for( itr=pulseArrayAV.begin(); itr!=pulseArrayAV.end(); itr++){
             if( itr->first==volName ){
                 MCPulse p = (itr->second).FindPrimaryInteraction( eventTime, daqWindow );
-                energyDeposit[ itr->first ] = p.GetEnergy()[0];
+                energyDeposit[ itr->first ] = p.GetEnergy()[0]+p.GetEnergy()[1]+p.GetEnergy()[2];
             }
             else{
                 MCPulse p = (itr->second).FindCoincidentInteraction( eventTime, coinWindow, daqWindow );
-                energyDeposit[ itr->first ] = p.GetEnergy()[0];
+                energyDeposit[ itr->first ] = p.GetEnergy()[0]+p.GetEnergy()[1]+p.GetEnergy()[2];
             }
         }
 
         for( itr=pulseArrayVOI.begin(); itr!=pulseArrayVOI.end(); itr++){
             MCPulse p = (itr->second).FindCoincidentInteraction( eventTime, coinWindow, daqWindow );
-            energyDeposit[ itr->first ] = p.GetEnergy()[0];
+            energyDeposit[ itr->first ] = p.GetEnergy()[0]+p.GetEnergy()[1]+p.GetEnergy()[2];
         }
 
         timeStamp = eventTime;
 
         tree -> Fill();
+        ID++;
             // Since the tree may have to be filled multiple times, it has to be done in this function.
         
         DefaultBranchVariables();
@@ -316,3 +317,56 @@ void TrackReader::FindEventTime( string& volName, double& eventTime ){
     }
 }
 
+
+
+vector<string> TrackReader::GetVOIFromFile( vector<string> inputName){
+
+    cout << "Reading over the input files to check all volumes involved..." << endl;
+
+    set<string> container;
+    vector<string> return_val;
+
+    for( vector<string>::iterator itr = inputName.begin(); itr!=inputName.end(); itr++ ){
+
+        // Open the ROOT file to read and set branch variables
+        //
+        TFile* inputFile = TFile::Open( itr->c_str(), "READ");
+        if( !inputFile ){
+            cerr << "ERROR reading file " << *itr << endl;
+            cerr << "Skipping...\n";
+            continue;
+        }
+
+        // Retrieve the tree and set branch address of variables for readout
+        //
+        TTree* inputTree = (TTree*)inputFile->Get("events");
+
+        StepInfo rdata;
+        inputTree -> SetBranchAddress( "volume",   &rdata.volume_name);
+
+        // Loop over the tree and process the events.
+        //
+        unsigned int nEntries = inputTree->GetEntries();
+
+        for( unsigned int n = 1; n<nEntries; n++ ){
+
+            inputTree->GetEntry(n);
+
+            string name = rdata.volume_name;
+            if( name!="" ){
+                container.insert( rdata.volume_name);
+            }
+        }
+        inputFile->Close();
+    }
+
+    cout << "Adding ";
+    for( auto itr = container.begin(); itr!=container.end(); itr++ ){
+        return_val.push_back( *itr );
+        cout << *itr << ' ';
+    }
+
+    cout << "as volumes of interest." << endl;
+
+    return return_val;
+}

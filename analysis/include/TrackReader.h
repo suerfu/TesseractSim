@@ -61,7 +61,7 @@ private:
         // This array holds the volumes of interest.
         // If it's zero, will treat all volumes as volume of interest.
 
-    vector<string> GetVOIFromFile( vector<string> inputName){}
+    vector<string> GetVOIFromFile( vector<string> inputName);
         // Iterate through given files to generate a list of volumes involved.
 
 
