@@ -7,6 +7,8 @@
 
 using namespace std;
 
+bool CompareMCPulse( const MCPulse& a, const MCPulse& b );
+
 class MCPulseArray{
 
 public:
@@ -22,7 +24,7 @@ public:
     void Clear(){ pulseArray.clear(); }
 
 	void Sort(){
-        std::sort( pulseArray.begin(), pulseArray.end() );
+        std::sort( pulseArray.begin(), pulseArray.end(), CompareMCPulse );
         ResetIterator();
     }
 
@@ -47,6 +49,7 @@ private:
 	vector<MCPulse>::iterator head;
 
 };
+
 
 
 #endif

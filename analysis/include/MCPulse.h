@@ -23,7 +23,7 @@ public:
 
 	MCPulse& operator=( const MCPulse& a);
 
-	bool operator<( const MCPulse& a ){ return time < a.time; }
+	bool operator<( const MCPulse& a ) const { return time < a.time; }
 
 	MCPulse& operator+( const MCPulse& a);
 
@@ -31,8 +31,8 @@ public:
 
 	void SetTime( double a ){ time = a; }
 	
-	double GetTime(){ return time; }
-
+	double GetTime() const{ return time; }
+	
 	void SetEnergy( int i, double a ){ if(i<nType) energy[i] = a; }
 	
 	void SetEnergy( vector<double> a ){

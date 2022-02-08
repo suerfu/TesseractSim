@@ -4,6 +4,11 @@
 #include "MCPulseArray.h"
 
 
+bool CompareMCPulse( const MCPulse& a, const MCPulse& b ){
+	return a < b;
+}
+
+
 MCPulseArray::MCPulseArray(){
     head = pulseArray.begin();
 }
