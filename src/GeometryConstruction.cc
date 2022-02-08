@@ -116,9 +116,15 @@ void GeometryConstruction::ConstructUserVolumes(){
 							GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
 							(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
 							0, 2*M_PI);
-				G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
-							GeometryManager::Get()->GetMaterial("G4_Galactic"),
-							"virtualDetectorLV");
+				//G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
+				//			GeometryManager::Get()->GetMaterial("G4_Galactic"),
+				//			"virtualDetectorLV");
+
+        G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
+      				GeometryManager::Get()->GetMaterial( "LHe" ),
+      				"virtualDetectorLV");
+
+
 				G4VPhysicalVolume * virtualDetector = new G4PVPlacement(0,
 							G4ThreeVector(0,0,-10*mm),
 							virtualDetectorLogic,
@@ -148,7 +154,7 @@ void GeometryConstruction::ConstructUserVolumes(){
         G4LogicalVolume* rock_lv = new G4LogicalVolume( rock_solid, rockMaterial, "rock_lv");
         G4VPhysicalVolume* rock_pv = new G4PVPlacement( 0, G4ThreeVector(0,0,-world_z/4), rock_lv, "rockSURF", world_lv, false, 0, fCheckOverlaps);
 
-        //G4Material* virtualDetMaterial = GeometryManager::Get()->GetMaterial( "G4_Galactic" ); 
+        //G4Material* virtualDetMaterial = GeometryManager::Get()->GetMaterial( "G4_Galactic" );
         G4Material* virtualDetMaterial = GeometryManager::Get()->GetMaterial( "LHe" );
 
         G4Box* det_solid = new G4Box( "virtualDetector_solid", world_x/2.0, world_y/2.0, world_z/4.0);
