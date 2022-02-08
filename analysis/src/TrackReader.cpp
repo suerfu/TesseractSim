@@ -125,6 +125,7 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
 
 //    tree->Write();
     outputFile->Write();
+    cout << "Output file " << outputStr << " written.\n";
 
 }
 
@@ -143,6 +144,8 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
         cerr << "Skipping...\n";
         return;
     }
+
+    cout << "Processing " << input << endl;
 
     strncpy( inputFileNameChar, input.c_str(), MAX_FILENAME_LEN-1 );
 
@@ -321,12 +324,14 @@ void TrackReader::FindEventTime( string& volName, double& eventTime ){
 
 vector<string> TrackReader::GetVOIFromFile( vector<string> inputName){
 
-    cout << "Reading over the input files to check all volumes involved..." << endl;
+    //cout << "Reading over the input files to check all volumes involved..." << endl;
 
     set<string> container;
     vector<string> return_val;
 
     for( vector<string>::iterator itr = inputName.begin(); itr!=inputName.end(); itr++ ){
+
+        cout << "Checking " << *itr << endl;
 
         // Open the ROOT file to read and set branch variables
         //
