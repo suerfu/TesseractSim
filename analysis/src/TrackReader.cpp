@@ -44,7 +44,7 @@ void TrackReader::ConfigureTTree( TTree* tree ){
         energyDeposit[ volumeName ] = 0;
         tree->Branch( edepName.c_str(), &energyDeposit[volumeName], rootName.c_str() );
             // Set address for ROOT tree branch
-        
+
         // If a volume name also exists in volume-of-interest, remove them all.
         //
         vector<string>::iterator tmp = find(arrayVOI.begin(), arrayVOI.end(), *itr1);
@@ -58,7 +58,7 @@ void TrackReader::ConfigureTTree( TTree* tree ){
     // Generate energy deposition array for volumes of interest.
     //
     for( vector<string>::iterator itr1 = arrayVOI.begin(); itr1!=arrayVOI.end(); itr1++ ){
-        
+
         string volumeName = *itr1;
         cout << "Creating pulse array for VOI " << volumeName << endl;
         string edepName = string("edep_") + *itr1;
@@ -94,7 +94,7 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
     //
     // If no volume-of-interest is specified, iterate over the file to get all the volumes involved.
     if( arrayVOI.empty()==true ){
-        cout << "Volume-of-Interest is empty. All volumes treated as VOI.\n"; 
+        cout << "Volume-of-Interest is empty. All volumes treated as VOI.\n";
         arrayVOI = GetVOIFromFile( inputStr );
     }
 
@@ -218,7 +218,7 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
             }
         }
     }
-            
+
     //tree->Fill();
 }
 
@@ -241,7 +241,7 @@ void TrackReader::ProcessPulseArray( TTree* tree ){
     double eventTime = -1;
     string volName;
     FindEventTime( volName, eventTime );
-    
+
     while( eventTime > 0 ){
 
         // Now eventTime is the time of interaction.
@@ -265,11 +265,11 @@ void TrackReader::ProcessPulseArray( TTree* tree ){
         }
 
         timeStamp = eventTime;
-
+        cout<<"Tree Flling"<<endl;
         tree -> Fill();
         ID++;
             // Since the tree may have to be filled multiple times, it has to be done in this function.
-        
+
         DefaultBranchVariables();
         clusterIndex++;
 

@@ -16,3 +16,5 @@ target_link_libraries( ProcessTrack ${ROOT_LIBRARIES} )
 add_executable( RockSpecAnalyzer RockSpecAnalyzer.cpp )
 target_link_libraries( RockSpecAnalyzer ${ROOT_LIBRARIES} )
 
+add_executable( EnergyDepVSIntialEnergy EnergyDepVSIntialEnergy.cpp )
+target_link_libraries( EnergyDepVSIntialEnergy ${ROOT_LIBRARIES} )
