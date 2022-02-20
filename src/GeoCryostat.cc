@@ -34,6 +34,7 @@ void GeoCryostat::Construct(){
 void GeoCryostat::ConstructTanks(){
 	//300K, 50K, 4K, still
 	G4String names[4] = {"Cryostat300K", "Cryostat50K", "Cryostat4K", "CryostatStill"};
+	G4String material[4] = {"Ti", "Cu", "Cu", "Cu"};
 	for(int i=0; i<4; i++){
 		G4int nP = GeometryManager::Get()->GetCryostatCoordinateNP(i);
 		G4double* rI =  GeometryManager::Get()->GetCryostatCoordinateRI(i);
@@ -45,7 +46,7 @@ void GeoCryostat::ConstructTanks(){
 		}
 		G4Polycone* cryostatSolid = new G4Polycone(names[i], 0, 2*M_PI, nP, z, rI, rO);
 		G4LogicalVolume* cryostatLogic = new G4LogicalVolume( cryostatSolid,
-																GeometryManager::Get()->GetMaterial("Ti"),
+																GeometryManager::Get()->GetMaterial(material[i]),
 																names[i]+"LV");
 		G4VPhysicalVolume* cryostatPhysical = new G4PVPlacement(0,
 																G4ThreeVector(0,0,0),
