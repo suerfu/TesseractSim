@@ -255,40 +255,6 @@ int main(int argc, char* argv[])
           f->Close();
   }
 }
-
-
-
-//    for(const string& filename : inputFilenames){
-
-//      Printf("file -> %s", filename.c_str());
-//      TFile* f = new TFile(filename.c_str());
-
-//          TTree *t1 = (TTree*)f->Get("events");
-//          Int_t nentries = (Int_t)t1->GetEntries();
-
-
-//          Double_t X_pos,Y_pos,Z_pos,X_mom,Y_mom,Z_mom, Intial_E;
-//          Int_t event_ID, step_ID, parent_ID;
-//          char Process_ID[16];
-
-//          t1->SetBranchAddress("eventID",&event_ID);
-//          t1->SetBranchAddress("parentID",&parent_ID);
-//          t1->SetBranchAddress("stepID",&step_ID);
-//          t1->SetBranchAddress("rx",&X_pos);
-//          t1->SetBranchAddress("ry",&Y_pos);
-//          t1->SetBranchAddress("rz",&Z_pos);
-//          t1->SetBranchAddress("px",&X_mom);
-//          t1->SetBranchAddress("py",&Y_mom);
-//          t1->SetBranchAddress("pz",&Z_mom);
-//          t1->SetBranchAddress("Eki",&Intial_E);
-//          t1->SetBranchAddress("process",Process_ID);
-
-//          for(Int_t q=0;q<nentries;q++){
-//            std::string Process(Process_ID);
-//      }
-
-
-
-//  }
-
-  }
+outputfile->Write();
+outputfile->Close();
+}
