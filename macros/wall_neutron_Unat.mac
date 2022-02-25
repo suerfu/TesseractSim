@@ -21,23 +21,18 @@
 /run/initialize
 /tracking/verbose 0
 
-/control/getEnv a
-/control/getEnv b
+#/control/getEnv a
+#/control/getEnv b
 
-/random/setSeeds {a} {b}
+#/random/setSeeds {a} {b}
 
 /filter/recordWhenHit virtualDetector
 /filter/killWhenHit virtualDetector
 
 #Using the wall generator
-#/generator/spectrum /config/generator/rockGammaK40.root
-#/generator/spectrum /config/generator/rockGammaU238.root
-#/generator/spectrum /config/generator/rockGammaTh232.root
-/generator/spectrum /config/generator/rockNeutronUnat.root
-#/generator/spectrum /config/generator/rockNeutronTh232.root
-#/generator/particle gamma
+/generator/spectrum config/generator/rockNeutronUnat.root
 /generator/particle neutron
-#/generator/particle geantino
+
 #can Specify:Top,Bottom,SideRight,SideRight,Front,Back, All
 /generator/surfacename All
 /generator/wall_x 1.5 m

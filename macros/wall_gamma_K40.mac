@@ -21,24 +21,17 @@
 /run/initialize
 /tracking/verbose 0
 
-/control/getEnv a
-/control/getEnv b
+#/control/getEnv a
+#/control/getEnv b
 
-/random/setSeeds {a} {b}
+#/random/setSeeds {a} {b}
 
 /filter/recordWhenHit virtualDetector
 /filter/killWhenHit virtualDetector
 
 #Using the wall generator
-/generator/spectrum /config/generator/rockGammaK40.root
-#/generator/spectrum /home/pp59a/TESSERACT/TesseractSim_build/config/generator/rockGammaU238.root
-#/generator/spectrum /home/pp59a/TESSERACT/TesseractSim_build/config/generator/rockGammaTh232.root
-#/generator/spectrum /home/pp59a/TESSERACT/TesseractSim_build/config/generator/rockNeutronUnat.root
-#/generator/spectrum /home/pp59a/TESSERACT/TesseractSim_build/config/generator/rockNeutronTh232.root
-
+/generator/spectrum config/generator/rockGammaK40.root
 /generator/particle gamma
-#/generator/particle neutron
-#/generator/particle geantino
 
 #can Specify:Top,Bottom,SideRight,SideRight,Front,Back, All
 /generator/surfacename All
