@@ -52,47 +52,49 @@ target_link_libraries(TesseractSim ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 # build TesseractSim. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(SCRIPTS
-  /macros/gui.mac
-  /macros/init_vis.mac
-  /macros/vis.mac
-  /macros/icons.mac
-  /macros/test.mac
-  /macros/rock.mac
-  /macros/geantino.mac
-  /macros/rock_gamma_K40.mac
-  /macros/rock_gamma_Th232.mac
-  /macros/rock_gamma_U238.mac
-  /macros/rock_neutron_Th232.mac
-  /macros/rock_neutron_Unat.mac
-  /macros/wall_gamma_K40.mac
-  /macros/wall_gamma_Th232.mac
-  /macros/wall_gamma_U238.mac
-  /macros/wall_neutron_Th232.mac
-  /macros/wall_neutron_Unat.mac
-  /macros/virtualDetector_WallGenerator.mac
-  /config/geometry/cryoPlates_Ricochet.dat
-  /config/geometry/cryostatBeams_Ricochet.dat
-  /config/geometry/cryostatWall_Ricochet.dat
-  /config/geometry/dimensions_Ricochet.dat
-  /config/geometry/cryoPlates_Nucleus.dat
-  /config/geometry/cryostatBeams_Nucleus.dat
-  /config/geometry/cryostatWall_Nucleus.dat
-  /config/geometry/dimensions_Nucleus.dat
-  /config/generator/rockGammaK40.root
-  /config/generator/rockGammaTh232.root
-  /config/generator/rockGammaU238.root
-  /config/generator/rockNeutronTh232.root
-  /config/generator/rockNeutronUnat.root
-  )
-
-foreach(_script ${SCRIPTS})
-  configure_file(
-    ${PROJECT_SOURCE_DIR}/${_script}
-    ${PROJECT_BINARY_DIR}/${_script}
-    COPYONLY
-    )
-endforeach()
+file(COPY ${PROJECT_SOURCE_DIR}/macros DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/config DESTINATION ${PROJECT_BINARY_DIR})
+#set(SCRIPTS
+#  /macros/gui.mac
+#  /macros/init_vis.mac
+#  /macros/vis.mac
+#  /macros/icons.mac
+#  /macros/test.mac
+#  /macros/rock.mac
+#  /macros/geantino.mac
+#  /macros/rock_gamma_K40.mac
+#  /macros/rock_gamma_Th232.mac
+#  /macros/rock_gamma_U238.mac
+#  /macros/rock_neutron_Th232.mac
+#  /macros/rock_neutron_Unat.mac
+#  /macros/wall_gamma_K40.mac
+#  /macros/wall_gamma_Th232.mac
+#  /macros/wall_gamma_U238.mac
+#  /macros/wall_neutron_Th232.mac
+#  /macros/wall_neutron_Unat.mac
+#  /macros/virtualDetector_WallGenerator.mac
+#  /config/geometry/cryoPlates_Ricochet.dat
+#  /config/geometry/cryostatBeams_Ricochet.dat
+#  /config/geometry/cryostatWall_Ricochet.dat
+#  /config/geometry/dimensions_Ricochet.dat
+#  /config/geometry/cryoPlates_Nucleus.dat
+#  /config/geometry/cryostatBeams_Nucleus.dat
+#  /config/geometry/cryostatWall_Nucleus.dat
+#  /config/geometry/dimensions_Nucleus.dat
+#  /config/generator/rockGammaK40.root
+#  /config/generator/rockGammaTh232.root
+#  /config/generator/rockGammaU238.root
+#  /config/generator/rockNeutronTh232.root
+#  /config/generator/rockNeutronUnat.root
+#  )
+#
+#foreach(_script ${SCRIPTS})
+#  configure_file(
+#    ${PROJECT_SOURCE_DIR}/${_script}
+#    ${PROJECT_BINARY_DIR}/${_script}
+#    COPYONLY
+#    )
+#endforeach()
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

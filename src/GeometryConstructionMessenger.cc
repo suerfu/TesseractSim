@@ -34,11 +34,15 @@ GeometryConstructionMessenger::GeometryConstructionMessenger(GeometryConstructio
 	fGeoTypeCmd->SetParameterName("type", true);
 	fGeoTypeCmd->SetDefaultValue(0);
 
-	// Type 10X 
+	// All types
+	fConstructGeoCmd = new G4UIcmdWithoutParameter( "/geometry/construct", this);
+	fConstructGeoCmd->SetGuidance( "Construct the geometry after loading parameters" );
+
 	fDimensionFileCmd = new G4UIcmdWithAString( "/geometry/dimensionFile", this);
 	fDimensionFileCmd->SetGuidance( "Dimension file path and name. Use this file to include dimension name, value pairs.\n"
 				"Consider including groups of dimensions for special geometries in seperate files.");
 
+	// Type 10X 
 	fCryostatWallFileCmd = new G4UIcmdWithAString( "/geometry/cryostatWallFile", this);
 	fCryostatWallFileCmd->SetGuidance( "TESSERACT cryostat wall profile file path and name" );
 
@@ -48,9 +52,9 @@ GeometryConstructionMessenger::GeometryConstructionMessenger(GeometryConstructio
 	fCryoBeamFileCmd = new G4UIcmdWithAString( "/geometry/cryoBeamFile", this);
 	fCryoBeamFileCmd->SetGuidance( "TESSERACT cryostat inner beams, file path and name" );
 
-	// All types
-	fConstructGeoCmd = new G4UIcmdWithoutParameter( "/geometry/construct", this);
-	fConstructGeoCmd->SetGuidance( "Construct the geometry after loading parameters" );
+	fSetByVersionCmd = new G4UIcmdWithAString( "/geometry/setByVersion", this);
+	fSetByVersionCmd->SetGuidance( "Set dimension, cryostatWall, cryoBeam, and cryoPlate files together by specify the version folder name" );
+
 	
 }
 
@@ -80,6 +84,13 @@ void GeometryConstructionMessenger::SetNewValue( G4UIcommand* command, G4String 
 	}
 	else if( command==fCryoBeamFileCmd ){
 		GeometryManager::Get()->SetFilePath("cryoBeamFile", newValue);
+	}
+	else if( command==fSetByVersionCmd ){
+		G4cout<<"Set geometry version "<<newValue<<G4endl;
+		GeometryManager::Get()->SetFilePath("dimensionFile", "config/geometry/"+newValue+"/dimensions.dat");
+		GeometryManager::Get()->SetFilePath("cryostatWallFile", "config/geometry/"+newValue+"/cryostatWall.dat");
+		GeometryManager::Get()->SetFilePath("cryoPlateFile", "config/geometry/"+newValue+"/cryoPlate.dat");
+		GeometryManager::Get()->SetFilePath("cryoBeamFile", "config/geometry/"+newValue+"/cryostatBeam.dat");
 	}
 	else if( command==fConstructGeoCmd ){
 		// At this point GeometryManager::SetFilePath() has been called by GeometryConstructionMessenger 

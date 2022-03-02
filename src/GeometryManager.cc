@@ -233,7 +233,7 @@ void  GeometryManager::DefineMaterials( ){
     //
     G4Material* LHe = new G4Material("LHe", z=2., a= 4.00*g/mole, density= 0.141*g/cm3);
 	//Add color
-	materialColor["LHe"] = G4Color(1, 0.1, 1, 0.2);
+	materialColor["LHe"] = G4Color(1, 0.1, 1);
 
     // ***********************************
 	// Sodium Iodide
@@ -244,7 +244,7 @@ void  GeometryManager::DefineMaterials( ){
     G4Element* I = new G4Element( "Iodine", "I", z = 53., a = 127 * g/mole );
     NaI->AddElement(Na, natoms = 1);
     NaI->AddElement( I, natoms = 1);
-	materialColor["NaI"] = G4Color(0.1, 0.1, 1, 0.2);
+	materialColor["NaI"] = G4Color(0.1, 0.1, 1);
 
     // ***********************************
 	// Polyethylene
@@ -255,7 +255,7 @@ void  GeometryManager::DefineMaterials( ){
     G4Element* H = new G4Element( "Hydrogen", "H", z = 1., a = 1.02 * g/mole );
     PE->AddElement(C, natoms = 1);
     PE->AddElement(H, natoms = 2);
-	materialColor["PE"] = G4Color(1, 1, 0.9, 0.2);
+	materialColor["PE"] = G4Color(1, 1, 0.9);
 
     // ***********************************
 	// SS 304
@@ -270,22 +270,22 @@ void  GeometryManager::DefineMaterials( ){
     SS->AddElement(Mn, 0.02); //mass fraction
 	SS->AddElement(Cr, 0.18);
 	SS->AddElement(Ni, 0.10);
-	materialColor["SS"] = G4Color(0.5, 0.5, 0.9, 0.2);
+	materialColor["SS"] = G4Color(0.5, 0.5, 0.9);
 	
     G4Material* Cu = new G4Material("Cu", density = 8.96*g/cm3, ncomp=1);
     G4Element* CuElement = new G4Element( "Copper", "Cu", z = 29.,  a = 63.5 * g/mole );
     Cu->AddElement(CuElement, natoms = 1);
-	materialColor["Cu"] = G4Color(1, 0.1, 0.1, 0.2);
+	materialColor["Cu"] = G4Color(1, 0.1, 0.1);
 
     G4Material* Pb = new G4Material("Pb", density = 11.29*g/cm3, ncomp=1);
     G4Element* PbElement = new G4Element( "Lead", "Pb", z = 82.,  a = 207.2 * g/mole );
     Pb->AddElement(PbElement, natoms = 1);
-	materialColor["Pb"] = G4Color(0.1, 0.1, 0.1, 0.2);
+	materialColor["Pb"] = G4Color(0.1, 0.1, 0.1);
 
     G4Material* Ti = new G4Material("Ti", density = 11.29*g/cm3, ncomp=1);
     G4Element* TiElement = new G4Element( "Titanium", "Ti", z = 22.,  a = 47.9 * g/mole );
     Ti->AddElement(TiElement, natoms = 1);
-	materialColor["Ti"] = G4Color(0.1, 1, 0.1, 0.2);
+	materialColor["Ti"] = G4Color(0.1, 1, 0.1);
 
     // ***********************************
 	// Rock at Homestake

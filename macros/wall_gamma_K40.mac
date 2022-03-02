@@ -11,10 +11,11 @@
 #/geometry/cryostatWallFile config/geometry/cryostatWall_Ricochet.dat
 #/geometry/cryoPlateFile config/geometry/cryoPlates_Ricochet.dat
 #/geometry/cryoBeamFile config/geometry/cryostatBeams_Ricochet.dat
-/geometry/dimensionFile config/geometry/dimensions_Nucleus.dat
-/geometry/cryostatWallFile config/geometry/cryostatWall_Nucleus.dat
-/geometry/cryoPlateFile config/geometry/cryoPlates_Nucleus.dat
-/geometry/cryoBeamFile config/geometry/cryostatBeams_Nucleus.dat
+#/geometry/dimensionFile config/geometry/dimensions_Nucleus.dat
+#/geometry/cryostatWallFile config/geometry/cryostatWall_Nucleus.dat
+#/geometry/cryoPlateFile config/geometry/cryoPlates_Nucleus.dat
+#/geometry/cryoBeamFile config/geometry/cryostatBeams_Nucleus.dat
+/geometry/setByVersion Ricochet_V1_1
 /geometry/construct
 
 # Initialize kernel
@@ -27,7 +28,7 @@
 #/random/setSeeds {a} {b}
 
 /filter/recordWhenHit virtualDetector
-/filter/killWhenHit virtualDetector
+#/filter/killWhenHit virtualDetector
 
 #Using the wall generator
 /generator/spectrum config/generator/rockGammaK40.root

@@ -43,6 +43,7 @@ private:
 	G4UIcmdWithAString*   fCryostatWallFileCmd;
 	G4UIcmdWithAString*   fCryoPlateFileCmd;
 	G4UIcmdWithAString*   fCryoBeamFileCmd;
+	G4UIcmdWithAString*   fSetByVersionCmd;
 	G4UIcmdWithoutParameter* fConstructGeoCmd;
 
    // G4UIcmdWith3VectorAndUnit* posCmd;
