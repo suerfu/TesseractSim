@@ -83,7 +83,7 @@ void GeoShielding::Construct(){
 														name+layerName[i]+"BoxLV");
 		//Placements
 		G4VPhysicalVolume* shieldPhysical = new G4PVPlacement( 0, 
-														G4ThreeVector(0,0, shieldZOffset), 
+														G4ThreeVector(0,0, i==0?shieldZOffset:0), 
 														shieldLogic, 
 														name+layerName[i]+"BoxPhysical",
 														shieldMotherVolume,

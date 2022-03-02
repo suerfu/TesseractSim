@@ -1,0 +1,20 @@
+#dimensions, holes, and position of any concentric disc shape volumes in cryostate. 
+#drill chart, radius [mm] (Please only append to the end of the next line! Don't change anything else! Keep the drill chart at the 3rd line!)
+#2.5 3.9 5 10 10.5
+#No overlaps or containing realtions.
+#Z offset w.r.t shield cube center.
+#Maximum 6 holes! 
+#All dimensions in [mm]
+#name           r      thickness   z     material   nHoles   x[6]					   y[6]                    drill number[6]
+stillPlate      165.0  10          1345	    Cu      3        112.583 -112.583 0 0 0 0  65.0 65.0 -130.0 0 0 0  1 1 1 -1 -1 -1
+exchangerPlate  150.0  10          1215     Cu      6        112.583 -112.583 0 51.962 -51.962 0  65.0 65.0 -130.0 30 30 -60  1 1 1 0 0 0
+MXCPlate        150.0  10          1085     Cu      3        112.583 -112.583 0 0 0 0  65.0 65.0 -130.0 0 0 0  1 1 1 -1 -1 -1
+innerPbPlate1   150.0  100          997.5   Pb      4        112.583 -112.583 0 0 0 0  65.0 65.0 -130.0 0 0 0  1 1 1 4 -1 -1
+smallPlate1      75.0  10           275     Cu      4         34.641  -34.641 0 0 0 0  20 20 -40 0 0 0         1 1 1 3 -1 -1
+#innerPbPlate2   150.0  50           225     Pb      6        112.583 -112.583 0 34.641  -34.641 0  65.0 65.0 -130.0 20 20 -40  1 1 1 1 1 1
+#innerPEPlate1   150.0  50           175     PE      6        112.583 -112.583 0 34.641  -34.641 0  65.0 65.0 -130.0 20 20 -40  1 1 1 2 2 2
+#smallPlate2      75.0  5           302.5    Cu      4         34.641  -34.641 0 0 0 0  20 20 -40 0 0 0         0 0 0 3 -1 -1
+#innerPEPlate2   150.0  100         232.5    PE      6        112.583 -112.583 0 34.641 -34.641 0  65.0 65.0 -130.0 20 20 -40  1 1 1 2 2 2
+MXCTop          150.0  50           125     Cu      3         34.641  -34.641 0 0 0 0  20 20 -40 0 0 0         1 1 1 -1 -1 -1
+MXCBottom       150.0  50          -125     Cu      0        0 0 0 0 0 0   0 0 0 0 0 0   -1 -1 -1 -1 -1 -1
+

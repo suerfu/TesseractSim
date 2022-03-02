@@ -66,6 +66,7 @@ Dimensions of the geometries are stored under `config/geometry/`. New geometries
 /geometry/cryoBeamFile config/geometry/cryoBeams_XX.dat
 ```
 `X` indicate the type of inner detector. `100` is virtual, `101` is HeRALD, `102` is SPICE.
+
 To set geometry by versions (https://docs.google.com/spreadsheets/d/1Rh030C20SL-vMcX-TB1AyDCaPTAWi5ll98lAL_tP6po/edit?usp=sharing)
 ```
 /geometry/setByVersion Ricochet_V1_1
