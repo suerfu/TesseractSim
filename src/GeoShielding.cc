@@ -71,7 +71,7 @@ void GeoShielding::Construct(){
 	G4LogicalVolume* shieldMotherVolume = worldLogic;
 	for(int i=0; i<3; i++){
 		G4double layerThickness = GeometryManager::Get()->GetDimensions(layerName[i]+"Thickness");
-		G4Box* shieldBox = new G4Box( name+layerName[i]+"Box", boxWidth/2, 
+		G4Box* shieldBox = new G4Box( name+layerName[i]+"BoxSolid", boxWidth/2, 
 												boxWidth/2, 
 												boxHeight/2);
 		//Subtractions of the cavity for the cryostate
@@ -85,13 +85,13 @@ void GeoShielding::Construct(){
 		G4VPhysicalVolume* shieldPhysical = new G4PVPlacement( 0, 
 														G4ThreeVector(0,0, i==0?shieldZOffset:0), 
 														shieldLogic, 
-														name+layerName[i]+"BoxPhysical",
+														name+layerName[i]+"Box",
 														shieldMotherVolume,
 														false,
 														0,
 														fCheckOverlaps);
 		if(neckRadius<cavityRadius){
-			G4Tubs* neckTubs = new G4Tubs( name+layerName[i]+"NeckTubs", neckRadius, cavityRadius, 
+			G4Tubs* neckTubs = new G4Tubs( name+layerName[i]+"NeckSolid", neckRadius, cavityRadius, 
 													layerThickness/2, 
 													0, 2*M_PI);
 			G4LogicalVolume* neckLogic = new G4LogicalVolume( neckTubs,
@@ -100,7 +100,7 @@ void GeoShielding::Construct(){
 			G4VPhysicalVolume* neckPhysical = new G4PVPlacement( 0, 
 															G4ThreeVector(0,0,boxHeight/2 - layerThickness/2 + shieldZOffset), 
 															neckLogic, 
-															name+layerName[i]+"NeckPhysical",
+															name+layerName[i]+"Neck",
 															worldLogic,
 															false,
 															0,
@@ -126,7 +126,7 @@ void GeoShielding::Construct(){
 																GeometryManager::Get()->GetDimensions("shieldHeight")/2
 																+collarHeight/2+shieldZOffset),
 															collarLogic,
-															name+"CollarPhysical",
+															name+"Collar",
 															worldLogic,
 															false,
 															0,
@@ -146,95 +146,10 @@ void GeoShielding::Construct(){
 		G4VPhysicalVolume* donutPhysical = new G4PVPlacement( 0,
 															G4ThreeVector(0,0,donutZOffset),
 															donutLogic,
-															name+"DonutPhysical",
+															name+"Donut",
 															worldLogic,
 															false,
 															0,
 															fCheckOverlaps);
 	}
-
-
-/*
-	//Pb layer
-	//Basic solids
-    G4Box* PbBox = new G4Box( name+"PbBox", boxWidth/2, 
-											boxWidth/2, 
-											boxHeight/2);
-	//Subtractions of the cavity for the cryostate
-	G4VSolid * PbBoxSub = new G4SubtractionSolid( name+"PbBoxSub", PbBox, cavityTubs, 
-			  									0, G4ThreeVector(0, 0, cavityOffset));
-	//Logic volumes
-	G4LogicalVolume* PbLogic = new G4LogicalVolume( PbBoxSub, 
-													GeometryManager::Get()->GetMaterial("Pb"),
-													name+"PbBoxLV");
-	//Placements
-	G4VPhysicalVolume* PbPhysical = new G4PVPlacement( 0, 
-													G4ThreeVector(0,0,0), 
-													PbLogic, 
-													name+"PbBoxPhysical",
-													SSLogic, //Inside SS!
-													false,
-													0,
-													fCheckOverlaps);
-	//Neck extension
-	if(neckRadius<cavityRadius){
-		G4Tubs* neckPbTubs = new G4Tubs( name+"NeckPbTubs", neckRadius, cavityRadius, 
-												PbThickness/2, 
-												0, 2*M_PI);
-		G4LogicalVolume* neckPbLogic = new G4LogicalVolume( neckPbTubs,
-														GeometryManager::Get()->GetMaterial("Pb"),
-														name+"NeckPbLV");
-		G4VPhysicalVolume* neckPbPhysical = new G4PVPlacement( 0, 
-														G4ThreeVector(0,0,boxHeight/2 - PbThickness/2+ shieldZOffset), 
-														neckPbLogic, 
-														name+"neckPbPhysical",
-														worldLogic,
-														false,
-														0,
-														fCheckOverlaps);
-	}
-	boxWidth -= PbThickness*2;
-	boxHeight -= PbThickness*2;
-
-	//PE layer
-	//Basic solids
-    G4Box* PEBox = new G4Box( name+"PEBox", boxWidth/2, 
-											boxWidth/2, 
-											boxHeight/2);
-	//Subtractions of the cavity for the cryostate
-	G4VSolid * PEBoxSub = new G4SubtractionSolid( name+"PEBoxSub", PEBox, cavityTubs, 
-			  									0, G4ThreeVector(0, 0, cavityOffset));
-	//Logic volumes
-	G4LogicalVolume* PELogic = new G4LogicalVolume( PEBoxSub, 
-													GeometryManager::Get()->GetMaterial("PE"),
-													name+"PEBoxLV");
-	//Placements
-	G4VPhysicalVolume* PEPhysical = new G4PVPlacement( 0, 
-													G4ThreeVector(0,0,0), 
-													PELogic, 
-													name+"PEBoxPhysical",
-													PbLogic, //Inside Pb!
-													false,
-													0,
-													fCheckOverlaps);
-	//Neck extension
-	if(neckRadius<cavityRadius){
-		G4Tubs* neckPETubs = new G4Tubs( name+"NeckPETubs", neckRadius, cavityRadius, 
-												PEThickness/2, 
-												0, 2*M_PI);
-		G4LogicalVolume* neckPELogic = new G4LogicalVolume( neckPETubs,
-														GeometryManager::Get()->GetMaterial("PE"),
-														name+"NeckPELV");
-		G4VPhysicalVolume* neckPEPhysical = new G4PVPlacement( 0, 
-														G4ThreeVector(0,0,boxHeight/2 - PEThickness/2 + shieldZOffset), 
-														neckPELogic, 
-														name+"neckPEPhysical",
-														worldLogic,
-														false,
-														0,
-														fCheckOverlaps);
-	}
-	boxWidth -= PEThickness*2;
-	boxHeight -= PEThickness*2;
-*/
 }
