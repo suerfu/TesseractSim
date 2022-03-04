@@ -71,6 +71,10 @@ To set geometry by versions (https://docs.google.com/spreadsheets/d/1Rh030C20SL-
 ```
 /geometry/setByVersion Ricochet_V1_1
 ```
+from the default path `config/geometry/` in the build folder, or from a specified path
+```
+/geometry/setByVersion path/to/your/work/folder/Ricochet_V1_1
+```
 - 200 : Rock geometry.
 Creates a 10m x 10m x 5m Rock with Chemical composition of Homestake cavern and density of 3.26 g/cm3. The rock material is placed at the bottom half of the world and top half is called a virtualDetector, which is basically vacuum that does not block any particle.
 - other : "Cubic cow". The mock-up geometry is a cube target named *target* in the center of the world. The cube has an empty center, and is surrounded by a few farside detectors called *fsN* where N is a number starting from 0.
