@@ -132,15 +132,29 @@ void GetNeutronUnat(const char* ext = ".root"){
 
 
   for (Int_t i = 0; i < n; i++){
-      TFile* file = TFile::Open(filename[i]);
       Printf("%d file -> %s",i, filename[i]);
-      std::string name(filename[i]);
-      MacroInfo m=GetMacroInfo(file, name.substr(99,19)); //Flux_virtual_
-      //MacroInfo m=GetMacroInfo(file, "Flux_virtual_");
-      cout<<name.substr(99,19)<<"   "<<m.SurfaceArea<<endl;
-      TotalParticles = m.NoOfParticle + TotalParticles;
-      Surface_Area=m.SurfaceArea;
-  }
+      TFile* file = new TFile(filename[i]);
+
+      if( !file->IsOpen() ){
+             cout<< "Error opening " << filename[i] <<endl;
+             continue;
+      }
+      else {
+          if(file->IsZombie()) {
+            cout<<"The file "<<filename[i]<<"is corrupted"<<endl;
+            continue;
+          }
+          else{
+            std::string name(filename[i]);
+            //MacroInfo m=GetMacroInfo(file, name.substr(96,17)); //Flux_virtual_
+            MacroInfo m=GetMacroInfo(file, "Flux_NeutronUnat_0");
+            //cout<<name.substr(96,17)<<"   "<<m.SurfaceArea<<endl;
+            TotalParticles = m.NoOfParticle + TotalParticles;
+            Surface_Area=m.SurfaceArea;
+          }
+      }
+
+    }
 
 
   cout<<"Total number of particle simulated is "<<TotalParticles<<endl;
@@ -173,51 +187,13 @@ void GetNeutronUnat(const char* ext = ".root"){
   double TotalTime= TotalParticles/Particle_per_second;
   double Mass= 3.14*10*10*18*0.141/1000; //kg
 
-  cout<<"Total time in Days"<<TotalTime*1.15741e-5<<endl;
-  cout<<"Mass of Helium in kg"<<Mass<<endl;
+  cout<<"Total time in Days "<<TotalTime*1.15741e-5<<endl;
+  cout<<"Mass of Helium in kg "<<Mass<<endl;
+  cout<<"Bin Width "<<H_Dep->GetBinWidth(1)<<endl;
 
   Double_t factor = 1.;
-  H_Dep->Scale(factor/(TotalTime*1.15741e-5* Mass*10));
+  H_Dep->Scale(factor/(TotalTime*1.15741e-5* Mass*H_Dep->GetBinWidth(1)));
 
-
-  THStack* hsE4 = new THStack();
-  TLegend* leg4 = new TLegend(0.1,0.7,0.48,0.9);
-  //leg = new TLegend(0.8,0.8,1,1);
-
-  leg4->AddEntry(H_Dep, Form("Unat"));
-  //leg4->AddEntry(H_T_2, Form("%f<r<%f",radiuscut,radiuscut2));
-  //leg4->AddEntry(H_T_3, Form("%f<r<%f",radiuscut2,radiuscut3));
-  //leg4->AddEntry(H_degree_10, "9.5 degree");
-
-  TCanvas *c30 = new TCanvas();
-  c30->SetGrid();
-  //c30->SetLogx();
-  //c30->SetLogy();
-  gStyle->SetLineWidth(2);
-
-  H_Dep->SetLineStyle(1);
-  H_Dep->SetLineWidth(3);
-  H_Dep->GetXaxis()->SetRange(0,1000);
-  H_Dep->SetLineColor(3);
-  H_Dep->Draw("SAME");
-
-  //H_T_2->SetLineStyle(1);
-  //H_T_2->SetLineWidth(3);
-  //H_T_2->GetXaxis()->SetRange(1,15000);
-  //H_T_2->SetLineColor(1);
-  //H_T_2->Draw("SAME");
-
-
-  H_Dep->SetTitle(Form("Background Rate"));
-  H_Dep->SetTitleSize(0.8);
-  H_Dep->SetXTitle("Energy [keV]");
-  H_Dep->SetTitleSize(0.05, "X");
-  H_Dep->SetLabelSize(0.04,"X");
-  H_Dep->SetYTitle("DRU [counts/kg/keV/day]");
-  H_Dep->SetTitleSize(0.05, "Y");
-  H_Dep->SetLabelSize(0.04,"Y");
-
-  leg4->Draw("same");
 
   TFile *myfile = new TFile("NeutronUnat.root", "RECREATE");
   H_Dep->Write();

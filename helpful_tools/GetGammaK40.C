@@ -110,7 +110,7 @@ MacroInfo GetMacroInfo(TFile* file, TString Filename){
 
 void GetGammaK40(const char* ext = ".root"){
 
-  const char* inDir = "/Volumes/GoogleDrive/My Drive/GraduateWork/TESSERACT/Tesseract_sim_output/geom2_helium/GammaK40/";
+  const char* inDir = "/nfs/turbo/lsa-penningb/data/simulations/TESsims/geom3_helium/GammaK40/";
   char* dir = gSystem->ExpandPathName(inDir);
   Printf("%s", dir);
   void* dirp = gSystem->OpenDirectory(dir);
@@ -132,29 +132,43 @@ void GetGammaK40(const char* ext = ".root"){
 
 
   for (Int_t i = 0; i < n; i++){
-      TFile* file = TFile::Open(filename[i]);
       Printf("%d file -> %s",i, filename[i]);
-      std::string name(filename[i]);
-      MacroInfo m=GetMacroInfo(file, name.substr(96,17)); //Flux_virtual_
-      //MacroInfo m=GetMacroInfo(file, "Flux_virtual_");
-      cout<<name.substr(96,17)<<"   "<<m.SurfaceArea<<endl;
-      TotalParticles = m.NoOfParticle + TotalParticles;
-      Surface_Area=m.SurfaceArea;
-  }
+      TFile* file = new TFile(filename[i]);
+
+      if( !file->IsOpen() ){
+             cout<< "Error opening " << filename[i] <<endl;
+             continue;
+      }
+      else {
+          if(file->IsZombie()) {
+            cout<<"The file "<<filename[i]<<"is corrupted"<<endl;
+            continue;
+          }
+          else{
+            std::string name(filename[i]);
+            //MacroInfo m=GetMacroInfo(file, name.substr(96,17)); //Flux_virtual_
+            MacroInfo m=GetMacroInfo(file, "Flux_GammaK40_0");
+            //cout<<name.substr(96,17)<<"   "<<m.SurfaceArea<<endl;
+            TotalParticles = m.NoOfParticle + TotalParticles;
+            Surface_Area=m.SurfaceArea;
+          }
+      }
+
+    }
 
 
-  cout<<"Total number of particle simulated is "<<TotalParticles<<endl;
+  cout<<"Total number of particle simulated is "<<TotalParticles<<"and the surface area is"<<Surface_Area<<endl;
 
 
   TH1F *H_Dep = new TH1F("H_Dep","Energy Dep [keV]",100,0,1000);//keV for DRU
   H_Dep->SetStats(0);
 
 
-  TFile* f = TFile::Open("/Volumes/GoogleDrive/My Drive/GraduateWork/TESSERACT/Tesseract_sim_output/geom2_helium/ProcessedFiles/GammaK40_processed.root");
+  TFile* f = TFile::Open("/nfs/turbo/lsa-penningb/data/simulations/TESsims/Analysis/Analysis_File/geom3_helium/GammaK40/GammaK40_processed_files.root");
   TTree *t = (TTree*)f->Get("events");
   Int_t nentries = (Int_t)t->GetEntries();
   Double_t Edep;
-  t->SetBranchAddress("edep_virtualDetector",&Edep);//eV
+  t->SetBranchAddress("edep_virtualDetector",&Edep);//keV
 
   for (Int_t i=0;i<nentries;i++){
       t->GetEntry(i);
@@ -173,11 +187,12 @@ void GetGammaK40(const char* ext = ".root"){
   double TotalTime= TotalParticles/Particle_per_second;
   double Mass= 3.14*10*10*18*0.141/1000; //kg
 
-  cout<<"Total time in Days"<<TotalTime*1.15741e-5<<endl;
-  cout<<"Mass of Helium in kg"<<Mass<<endl;
+  cout<<"Total time in Days "<<TotalTime*1.15741e-5<<endl;
+  cout<<"Mass of Helium in kg "<<Mass<<endl;
+  cout<<"Bin Width "<<H_Dep->GetBinWidth(1)<<endl;
 
   Double_t factor = 1.;
-  H_Dep->Scale(factor/(TotalTime*1.15741e-5* Mass*10));
+  H_Dep->Scale(factor/(TotalTime*1.15741e-5* Mass*H_Dep->GetBinWidth(1)));
 
   TFile *myfile = new TFile("GammaK40.root", "RECREATE");
   H_Dep->Write();
