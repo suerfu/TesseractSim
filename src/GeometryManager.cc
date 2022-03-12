@@ -20,7 +20,7 @@ GeometryManager* GeometryManager::Get(){
 
 GeometryManager::GeometryManager(){
     material_man = GetMaterialManager();
-	//FIXME! add user commands 
+	//FIXME! add user commands
 	fCheckOverlaps = true;
     DefineMaterials();
 
@@ -62,7 +62,7 @@ G4Material* GeometryManager::GetMaterial(G4String name){
 
 G4double  GeometryManager::GetDimensions(G4String name){
 	if( dimensions.find(name)==dimensions.end() ){
-		return 0;		
+		return 0;
 	}else{
 		return dimensions[name];
 	}
@@ -228,16 +228,24 @@ void  GeometryManager::DefineMaterials( ){
     G4String symbol, name;
 
     // ***********************************
-	// Liquid helium
+	  //Cesium
     // ***********************************
     //
     G4Material* LHe = new G4Material("LHe", z=2., a= 4.00*g/mole, density= 0.141*g/cm3);
-	//Add color
-	materialColor["LHe"] = G4Color(1, 0.1, 1);
+	  //Add color
+	  materialColor["LHe"] = G4Color(1, 0.1, 1);
 
-    // ***********************************
-	// Sodium Iodide
-    // ***********************************
+		// ***********************************
+		//Silcon
+		// ***********************************
+		//
+		G4Material* Si = new G4Material("Si", z=14, a= 28.00*g/mole, density= 2.33*g/cm3);
+		//Add color
+		materialColor["Si"] = G4Colour::Yellow();
+
+    //***********************************
+	  //Sodium Iodide
+    //***********************************
     //
     G4Material* NaI = new G4Material("NaI", density = 3.67*g/cm3, ncomp=2);
     G4Element* Na = new G4Element( "Sodium", "Na", z = 11., a = 23 * g/mole );
@@ -245,6 +253,16 @@ void  GeometryManager::DefineMaterials( ){
     NaI->AddElement(Na, natoms = 1);
     NaI->AddElement( I, natoms = 1);
 	materialColor["NaI"] = G4Color(0.1, 0.1, 1);
+
+
+	 //************************************
+	 //Cesium
+	 //************************************
+	 //
+	 G4Material* Cs = new G4Material("Cs", z=55, a= 132.90*g/mole, density= 1.873*g/cm3);
+	 //Add color
+	 materialColor["Cs"] = G4Colour::Red();
+
 
     // ***********************************
 	// Polyethylene
@@ -271,7 +289,7 @@ void  GeometryManager::DefineMaterials( ){
 	SS->AddElement(Cr, 0.18);
 	SS->AddElement(Ni, 0.10);
 	materialColor["SS"] = G4Color(0.5, 0.5, 0.9);
-	
+
     G4Material* Cu = new G4Material("Cu", density = 8.96*g/cm3, ncomp=1);
     G4Element* CuElement = new G4Element( "Copper", "Cu", z = 29.,  a = 63.5 * g/mole );
     Cu->AddElement(CuElement, natoms = 1);
@@ -314,7 +332,7 @@ void  GeometryManager::DefineMaterials( ){
     G4Element* elP  = new G4Element(name = "Phosphorus" , symbol = "P"  , z = 15. , a =  30.974*g/mole);
     G4Element* elH  = new G4Element(name = "Hydrogen"   , symbol = "H"  , z = 1.  , a =   1.008*g/mole);
     G4Element* elO  = new G4Element(name = "Oxygen"     , symbol = "O"  , z = 8.  , a =  15.999*g/mole);
-    
+
     G4double fracM_O = 0;
         // used to accumulate fractional mass of oxygen in the rock
     G4double fraction = 0;
@@ -325,13 +343,13 @@ void  GeometryManager::DefineMaterials( ){
     fracM = 28.086/(28.086+2*15.999);
     fracM_O += (1-fracM)*fraction;
     rock->AddElement( elSi, fracM * fraction );
-    
+
     // ============ TiO2 =============
     fraction = 0.0122;
     fracM = 47.867/(47.867+2*15.999);
     fracM_O += (1-fracM)*fraction;
     rock->AddElement( elTi, fracM * fraction );
-    
+
     // ============ Al2O3 =============
     fraction = 0.136;
     fracM = 2*26.981/(2*26.981+3*15.999);
@@ -343,19 +361,19 @@ void  GeometryManager::DefineMaterials( ){
     fracM = 55.845/(55.845+15.999);
     fracM_O += (1-fracM)*fraction;
     rock->AddElement( elFe, fracM * fraction );
-    
+
     // ============ MnO =============
     fraction = 0.0013;
     fracM = 54.938/(54.938+15.999);
     fracM_O += (1-fracM)*fraction;
     rock->AddElement( elMn, fracM * fraction );
-    
+
     // ============ MgO =============
     fraction = 0.07;
     fracM = 24.405/(24.405+15.999);
     fracM_O += (1-fracM)*fraction;
     rock->AddElement( elMg, fracM * fraction );
-    
+
     // ============ CaO =============
     fraction = 0.079;
     fracM = 40.078 / ( 40.078 + 15.999 );
@@ -514,8 +532,8 @@ void GeometryManager::LoadCryoPlate(){
 		plate.material = G4String(material);
 		plate.holes = new std::vector< std::pair<G4int, G4ThreeVector> >;
 		for(int ih=0; ih<nHoles; ih++){
-			plate.holes->push_back( 
-						std::make_pair( drill[ih], 
+			plate.holes->push_back(
+						std::make_pair( drill[ih],
 							G4ThreeVector(x[ih],y[ih],0)));
 		}
 		fCryoPlates.push_back(plate);
@@ -562,6 +580,3 @@ void GeometryManager::SetVisAttributes(){
 		}
 	}
 }
-
-
-

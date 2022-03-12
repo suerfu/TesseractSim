@@ -18,6 +18,8 @@
 #include "FarsideDetector.hh"
 
 #include "G4Box.hh"
+#include "G4Trap.hh"
+#include "G4Polycone.hh"
 #include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
@@ -111,14 +113,12 @@ void GeometryConstruction::ConstructUserVolumes(){
 			TESSERACTCryostat->Construct();
 			if(geoType%100==0){
 				G4cout<<" Dummy detector"<<G4endl;
+        /*
 				G4Tubs* virtualDetector_solid = new G4Tubs( "virtualDetectorsolid",
 							0,
 							GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
 							(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
 							0, 2*M_PI);
-				//G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
-				//			GeometryManager::Get()->GetMaterial("G4_Galactic"),
-				//			"virtualDetectorLV");
 
         G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
       				GeometryManager::Get()->GetMaterial( "LHe" ),
@@ -133,6 +133,93 @@ void GeometryConstruction::ConstructUserVolumes(){
 							false,
 							0,
 							fCheckOverlaps);
+         */
+         G4RotationMatrix* NO_ROT = new G4RotationMatrix;
+         G4double DilutionUnit_Radius = 3.0*cm;
+         G4double DilutionUnit_Height = 2.75*cm;
+
+         //DilutionUnit contains superfluid Helium
+         G4Tubs* DilutionUnit_S = new G4Tubs( "DilutionUnit", 0, DilutionUnit_Radius, (DilutionUnit_Height /2.0), 0, 2*M_PI);
+         G4LogicalVolume *DilutionUnit_LV = new G4LogicalVolume( DilutionUnit_S, GeometryManager::Get()->GetMaterial( "LHe" ), "DilutionUnit" );
+         G4VPhysicalVolume *DilutionUnit_PV = new G4PVPlacement( NO_ROT, G4ThreeVector(0,0,-30*mm),DilutionUnit_LV, "DilutionUnit", GeometryManager::Get()->GetLogicalVolume("world"), false, 0, fCheckOverlaps);
+         DilutionUnit_LV->SetVisAttributes(G4VisAttributes(G4Colour::Green()));
+
+
+         //Dilution Chamber
+         G4double nedges[15]= { -48.75*mm,
+                                -13.75*mm,
+                                -13.75*mm,
+                                0*mm,
+                                13.75*mm,
+                                13.75*mm,
+                                38.75*mm,
+                                38.75*mm,
+                                52.25*mm,
+                                52.25*mm,
+                                64.75*mm,
+                                64.75*mm,
+                                104.25*mm,
+                                104.25*mm,
+                                107.25*mm };
+
+
+
+           G4double innerradius[15]= { 0*mm,
+                               0*mm,
+                               30*mm,
+                               30*mm,
+                               30*mm,
+                               52.5*mm,
+                               52.5*mm,
+                               18*mm,
+                               18*mm,
+                               11*mm,
+                               11*mm,
+                               98*mm,
+                               98*mm,
+                               0*mm,
+                               0*mm};
+
+
+               G4double outerradius[15]= { 100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                       100*mm,
+                      100*mm,
+                     100*mm,
+                     100*mm,
+                     100*mm};
+
+         G4ThreeVector position_DilutionChamber = G4ThreeVector(0, 0, -30*mm);
+
+         G4Polycone* DilutionChamber_S = new G4Polycone("DilutionChamber", 0, 2*M_PI, 15, nedges, innerradius, outerradius);
+         G4LogicalVolume*  DilutionChamber_LV= new G4LogicalVolume(DilutionChamber_S, GeometryManager::Get()->GetMaterial("Cu"), "DilutionChamber");
+         G4VPhysicalVolume *DilutionChamber_PV = new G4PVPlacement(NO_ROT, position_DilutionChamber , DilutionChamber_LV, "DilutionChamber", GeometryManager::Get()->GetLogicalVolume("world"), false, 0, fCheckOverlaps);
+
+
+         G4Tubs* CPD_Unit_S = new G4Tubs( "CPD_Unit", 0, (76*mm/2.0), (1*mm /2.0), 0, 2*M_PI);
+         G4LogicalVolume *CPD_Unit_LV = new G4LogicalVolume( CPD_Unit_S, GeometryManager::Get()->GetMaterial("Cu"), "CPD_Unit" );
+         G4VPhysicalVolume *CPD_Unit_PV = new G4PVPlacement(NO_ROT, G4ThreeVector(0,0,19.75*mm-30*mm),CPD_Unit_LV, "CPD", GeometryManager::Get()->GetLogicalVolume("world"), false, 0, fCheckOverlaps);
+
+         G4ThreeVector position_Caseium_Dispenser = G4ThreeVector( 0*mm, 24.9*mm, 84.5*mm-30*mm);
+         G4RotationMatrix* turnAlongX = new G4RotationMatrix;
+         turnAlongX->rotateX(90*deg);
+
+         G4Trap* CaesiumDispenser_S = new G4Trap("CaesiumDispenser", 12.0*mm, 1.35*mm, 1.12*mm, 0.80*mm);
+         G4LogicalVolume*  CaesiumDispenser_LV= new G4LogicalVolume(CaesiumDispenser_S, GeometryManager::Get()->GetMaterial("Si"), "CaesiumDispenser");
+         G4VPhysicalVolume *CaesiumDispenser_PV = new G4PVPlacement(turnAlongX, position_Caseium_Dispenser, CaesiumDispenser_LV, "CaesiumDispenser", GeometryManager::Get()->GetLogicalVolume("world"), false, 0, fCheckOverlaps);
+
+
+         G4Tubs* Coppler_Pillar_CPD_S = new G4Tubs( "Coppler_Pillar_CPD", 0, (17.8*mm/2.0), (83.5*mm /2.0), 0, 2*M_PI);
+         G4LogicalVolume *Coppler_Pillar_CPD_LV = new G4LogicalVolume( Coppler_Pillar_CPD_S, GeometryManager::Get()->GetMaterial("Cu"), "Coppler_Pillar_CPD" );
+         G4VPhysicalVolume *Coppler_Pillar_CPD_PV = new G4PVPlacement( NO_ROT, G4ThreeVector(0,0,20.75*mm+ 83.5*mm /2.0-30*mm),Coppler_Pillar_CPD_LV, "Copper_Pillar", GeometryManager::Get()->GetLogicalVolume("world"), false, 0, fCheckOverlaps);
 
 			}else if(geoType%100==1){
 				//GeoDetectorHeRALD* detectorHeRALD = new GeoDetectorHeRALD());
