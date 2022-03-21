@@ -1,0 +1,23 @@
+#Dimensions and positions of the beams in the cold stages.
+#one line for each beam.
+#name   rO[mm] rI  l[mm]  position w.r.t center of shield cube [mm] material
+longBeam1  3.75  0    322.5   112.583 65 1188.75 SS
+longBeam2  3.75  0    322.5  -112.583 65 1188.75 SS
+longBeam3  3.75  0    322.5     0   -130 1188.75 SS
+shortBeam1 3.75  0    140     112.583 65  227.5 SS
+shortBeam2 3.75  0    140    -112.583 65  227.5 SS
+shortBeam3 3.75  0    140       0   -130  227.5 SS
+MXCBeam1   3.75  0    200      34.641 20  180   Cu
+MXCBeam2   3.75  0    200     -34.641 20  180   Cu
+MXCBeam3   3.75  0    200       0    -40  180   Cu
+CenterBeam 10    0    810       0      0  675   Cu
+#inner and down
+CuS300K1  65   61   222.5   0      0 503.75 Cu
+CuS50K1   50 46  222.5   0      0 503.75 Cu
+CuS4K1    35   31    222.5     0      0 503.75    Cu
+#outer and up
+CuSStill1 26.5 22.5 222.5      0      0 726.25    Cu
+#Outer and up
+#CuS300K2  71.5 67.5    222.5     0      0 726.25    Cu
+CuS50K2   56.5   52.5  222.5   0      0 726.25 Cu
+CuS4K2    41.5 37.5    222.5   0      0 726.25 Cu

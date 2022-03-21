@@ -3,14 +3,15 @@
 
 /geometry/type 100
 
-/geometry/dimensionFile config/geometry/dimensions_Ricochet.dat
-/geometry/cryostatWallFile config/geometry/cryostatWall_Ricochet.dat
-/geometry/cryoPlateFile config/geometry/cryoPlates_Ricochet.dat
-/geometry/cryoBeamFile config/geometry/cryostatBeams_Ricochet.dat
+#/geometry/dimensionFile config/geometry/dimensions_Ricochet.dat
+#/geometry/cryostatWallFile config/geometry/cryostatWall_Ricochet.dat
+#/geometry/cryoPlateFile config/geometry/cryoPlates_Ricochet.dat
+#/geometry/cryoBeamFile config/geometry/cryostatBeams_Ricochet.dat
 #/geometry/dimensionFile config/geometry/dimensions_Nucleus.dat
 #/geometry/cryostatWallFile config/geometry/cryostatWall_Nucleus.dat
 #/geometry/cryoPlateFile config/geometry/cryoPlates_Nucleus.dat
 #/geometry/cryoBeamFile config/geometry/cryostatBeams_Nucleus.dat
+/geometry/setByVersion Hybrid_V2_3
 /geometry/construct
 
 /run/initialize
