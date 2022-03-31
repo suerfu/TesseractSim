@@ -203,7 +203,8 @@ int main(int argc, char* argv[])
 
         for (Int_t i=0;i<nentries;i++){
           t->GetEntry(i);
-          std::string filename(name_file);
+          std::string filename_dummy(name_file);
+          std::string filename= filename_dummy +".root";
           if (E_dep<1000.0) {
 
             cout<<filename<<"  "<<Event_ID<<endl;
