@@ -196,15 +196,14 @@ int main(int argc, char* argv[])
         Int_t nentries = (Int_t)t->GetEntries();
         Double_t E_dep;
         Int_t Event_ID;
-        char name_file[100];
+        char name_file[200];
         t->SetBranchAddress("edep_virtualDetector",&E_dep);//keV
         t->SetBranchAddress("file",name_file);
         t->SetBranchAddress("eventID",&Event_ID);
 
         for (Int_t i=0;i<nentries;i++){
           t->GetEntry(i);
-          std::string filename_dummy(name_file);
-          std::string filename= filename_dummy +".root";
+          std::string filename(name_file);
           if (E_dep<1000.0) {
 
             cout<<filename<<"  "<<Event_ID<<endl;
@@ -249,7 +248,7 @@ int main(int argc, char* argv[])
                 }
 
               }
-
+             f1->Close();
             }
 
           }//end for looping over the entries

@@ -50,7 +50,7 @@ public:
 
 private:
 
-    static const unsigned int MAX_FILENAME_LEN = 64;
+    static const unsigned int MAX_FILENAME_LEN = 128;
 
     double daqWindow;
     double coinWindow;
