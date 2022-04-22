@@ -167,8 +167,8 @@ void GeoShielding::Construct(){
   if (hasOuterShield) {
     //G4Box* boratedWaterSheild = new G4Box( "BoratedWaterSheild", 1485*mm/2, 1485*mm/2, 1000*mm/2);
     //G4Box* hole = new G4Box("Hole",1385*mm/2 , 1385*mm/2, 2000*mm/2 );
-    G4Box* boratedWaterSheild = new G4Box("BoratedWaterSheild", OuterShieldLength/2.0, OuterShieldBreadth/2.0, OuterShieldHeight/2.0);
-    G4Box* hole = new G4Box("Hole",OuterShieldLength/2.0-OuterShieldThickness, OuterShieldBreadth/2.0-OuterShieldThickness, OuterShieldHeight);
+    G4Box* boratedWaterSheild = new G4Box("BoratedWaterSheild", OuterShieldLength/2.0+OuterShieldThickness, OuterShieldBreadth/2.0+OuterShieldThickness, OuterShieldHeight/2.0);
+    G4Box* hole = new G4Box("Hole",OuterShieldLength/2.0, OuterShieldBreadth/2.0, OuterShieldHeight);
     G4SubtractionSolid* bucketShielding= new G4SubtractionSolid("BucketShielding", boratedWaterSheild, hole, 0, G4ThreeVector{0,0,0});
 
     G4LogicalVolume* bucketShieldingLogic = new G4LogicalVolume( bucketShielding,
