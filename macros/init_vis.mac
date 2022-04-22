@@ -15,7 +15,7 @@
 ##/geometry/cryostatWallFile config/geometry/cryostatWall_Nucleus.dat
 ##/geometry/cryoPlateFile config/geometry/cryoPlates_Nucleus.dat
 ##/geometry/cryoBeamFile config/geometry/cryostatBeams_Nucleus.dat
-/geometry/setByVersion Ricochet_V5_1
+/geometry/setByVersion Hybrid_V2_6
 /geometry/construct
 
 # Set some default verbose

@@ -1,0 +1,44 @@
+#    name     value [mm]
+#########Shield###########
+#overall shield width, cube
+shieldWidth       1385
+#overall shield height
+shieldHeight      1532.5
+#outmost layer, SS
+SSThickness       50
+#second layer, Pb
+PbThickness       200
+#third layer, PE
+PEThickness       200
+#Cylindrical cavity for cryostat
+cavityRadius      242.5
+#cavity bottom to shield cube bottom
+cavityOffset      450
+#If the cryostat has a thinner neck
+neckRadius        82.5
+##Collar extended above the cube, comment following lines to remove from geometry
+## material: 1 Pb 2 PE
+collarHeight      540
+collarThickness   100
+collarMaterial    2
+##Donut shape cap above the fridge, comment following lines to remove from geometry
+## material: 1 Pb 2 PE
+#donutHeight       200
+#donutOD           670
+#donutID           300
+#donutZOffset      1670
+#donutMaterial     1
+#########Cryostat#########
+#Maximum plate thickness inside cryostat. This is a trick to make through holes in all plates.
+#Make sure the size is 10mm greater than the most thick plate.
+maxPlateThickness 110
+MXCWallInnerRadius 100
+MXCWallOuterRadius 150
+MXCWallHeight      200
+#shield cube center z offset w.r.t MXC center
+shieldZOffset    81.25
+##OuterShield made of 15% Bpoly
+OuterShieldLength       1485
+OuterShieldBreadth      1485
+OuterShieldHeight       1000
+OuterShieldThickness    100
