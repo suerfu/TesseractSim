@@ -70,6 +70,8 @@ void GeoShielding::Construct(){
   hasOuterShield *= OuterShieldHeight>0;
   G4double OuterShieldThickness = GeometryManager::Get()->GetDimensions("OuterShieldThickness");
   hasOuterShield *= OuterShieldThickness>0;
+  G4int    OuterShieldMaterial = GeometryManager::Get()->GetDimensions("OuterShieldMaterial"); //1 boratedPoly_15 2 PE
+  hasOuterShield *= OuterShieldMaterial>0;
 
 
 	//Cubic shield
@@ -172,7 +174,9 @@ void GeoShielding::Construct(){
     G4SubtractionSolid* bucketShielding= new G4SubtractionSolid("BucketShielding", boratedWaterSheild, hole, 0, G4ThreeVector{0,0,0});
 
     G4LogicalVolume* bucketShieldingLogic = new G4LogicalVolume( bucketShielding,
-                              GeometryManager::Get()->GetMaterial("boratedPoly_15"),
+                              GeometryManager::Get()->GetMaterial(donutMaterial==1?"boratedPoly_15"
+                                                :donutMaterial==2?"PE"
+                                                :"G4_Galactic"),
                               name+"bucketShieldingLV");
 
     G4VPhysicalVolume* bucketShieldingPhysical = new G4PVPlacement( 0,

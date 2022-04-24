@@ -37,9 +37,9 @@ MXCWallOuterRadius 150
 MXCWallHeight      200
 #shield cube center z offset w.r.t MXC center
 shieldZOffset    81.25
-##OuterShield made of 15% Bpoly
+##OuterShield made of PE
 OuterShieldLength       1385
 OuterShieldBreadth      1385
 OuterShieldHeight       1000
 OuterShieldThickness    100
-OuterShieldMaterial    1
+OuterShieldMaterial    2
