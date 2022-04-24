@@ -174,8 +174,8 @@ void GeoShielding::Construct(){
     G4SubtractionSolid* bucketShielding= new G4SubtractionSolid("BucketShielding", boratedWaterSheild, hole, 0, G4ThreeVector{0,0,0});
 
     G4LogicalVolume* bucketShieldingLogic = new G4LogicalVolume( bucketShielding,
-                              GeometryManager::Get()->GetMaterial(donutMaterial==1?"boratedPoly_15"
-                                                :donutMaterial==2?"PE"
+                              GeometryManager::Get()->GetMaterial(OuterShieldMaterial==1?"boratedPoly_15"
+                                                :OuterShieldMaterial==2?"PE"
                                                 :"G4_Galactic"),
                               name+"bucketShieldingLV");
 
