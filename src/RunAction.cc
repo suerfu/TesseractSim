@@ -7,6 +7,9 @@
 /// \file RunAction.cc
 /// \brief Implementation of the RunAction class
 
+// history:
+// 2021-11-18 B.Suerfu initial version
+// 2021-04-28 B.Suerfu outputing material table as a TMacro
 
 #include "RunAction.hh"
 #include "RunActionMessenger.hh"
@@ -15,6 +18,7 @@
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4PhysicalVolumeStore.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -100,6 +104,8 @@ void RunAction::EndOfRunAction(const G4Run* /*run*/){
 
     if( outputFile!=0 ) {
 
+        // Write the macro used in this run as a ROOT macro
+        //
         for( unsigned int i=0; i<macros.size(); i++){
             TMacro mac( macros[i] );
             mac.Write();    
@@ -109,9 +115,25 @@ void RunAction::EndOfRunAction(const G4Run* /*run*/){
         for( unsigned int i=0; i<randomSeeds.size(); i++)
             ss << randomSeeds[i] << '\t';
 
+        // Also record the random seeds used in this run as a separate TMacro.
+        //
         TMacro randm( "randomSeeds");
         randm.AddLine( ss.str().c_str());
         randm.Write();
+
+        // New since April 28, 2022
+        // Record the material table as well.
+        //
+        TMacro geomTable( "geometryTable");
+
+        // Iterate over the vector of stored physical volumes and get their material & mass.
+        auto volumeStore = G4PhysicalVolumeStore::GetInstance();
+        for( auto itr = volumeStore->begin(); itr!=volumeStore->end(); itr++){
+            ss.str( std::string() ); // clear the string stream
+            ss << (*itr)->GetName() << ' ' << (*itr)->GetLogicalVolume()->GetMass()/CLHEP::kg << ' ' << (*itr)->GetLogicalVolume()->GetMaterial()->GetName();
+            geomTable.AddLine( ss.str().c_str() );
+        }
+        geomTable.Write();
 
         outputFile->Write();
         outputFile->Close();
@@ -128,42 +150,42 @@ TTree* RunAction::GetDataTree(){
 void RunAction::AddRecordWhenHit( G4String a){ recordWhenHit.insert(a); }
 
 
-bool RunAction::RecordWhenHit( G4String s ){
+bool RunAction::RecordWhenHit( G4String a ){
     if( recordWhenHit.empty()==true ){
         return true;
             // If no volume is specified, record everything.
     }
     else{
-        return recordWhenHit.find(s)!=recordWhenHit.end();
+        return recordWhenHit.find( a )!=recordWhenHit.end();
     }
 }
 
 
 void RunAction::AddKillWhenHit( G4String a){ killWhenHit.insert(a); }
 
-bool RunAction::KillWhenHit( G4String s ){
-    return killWhenHit.find(s)!=killWhenHit.end();
+bool RunAction::KillWhenHit( G4String a ){
+    return killWhenHit.find( a )!=killWhenHit.end();
 }
 
 
 void RunAction::AddExcludeParticle( G4String a){ excludeParticle.insert(a); }
 
-bool RunAction::ExcludeParticle( G4String s){
-    return excludeParticle.find(s)!=excludeParticle.end();
+bool RunAction::ExcludeParticle( G4String a ){
+    return excludeParticle.find( a )!=excludeParticle.end();
 }
 
 
 void RunAction::AddExcludeVolume( G4String a){ excludeVolume.insert(a); }
 
-bool RunAction::ExcludeVolume( G4String s){
-    return excludeVolume.find(s)!=excludeVolume.end();
+bool RunAction::ExcludeVolume( G4String a ){
+    return excludeVolume.find( a )!=excludeVolume.end();
 }
 
 
 void RunAction::AddExcludeProcess( G4String a){ excludeProcess.insert(a); }
 
-bool RunAction::ExcludeProcess( G4String s){
-    return excludeProcess.find(s)!=excludeProcess.end();
+bool RunAction::ExcludeProcess( G4String a ){
+    return excludeProcess.find( a )!=excludeProcess.end();
 }
 
 
