@@ -130,7 +130,7 @@ void RunAction::EndOfRunAction(const G4Run* /*run*/){
         auto volumeStore = G4PhysicalVolumeStore::GetInstance();
         for( auto itr = volumeStore->begin(); itr!=volumeStore->end(); itr++){
             ss.str( std::string() ); // clear the string stream
-            ss << (*itr)->GetName() << ' ' << (*itr)->GetLogicalVolume()->GetMass()/CLHEP::kg << ' ' << (*itr)->GetLogicalVolume()->GetMaterial()->GetName();
+            ss << (*itr)->GetName() << ' ' << (*itr)->GetLogicalVolume()->GetMass( false, false )/CLHEP::kg << ' ' << (*itr)->GetLogicalVolume()->GetMaterial()->GetName();
             geomTable.AddLine( ss.str().c_str() );
         }
         geomTable.Write();
