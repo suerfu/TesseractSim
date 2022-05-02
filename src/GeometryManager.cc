@@ -303,7 +303,7 @@ void  GeometryManager::DefineMaterials( ){
     Pb->AddElement(PbElement, natoms = 1);
 	materialColor["Pb"] = G4Color(0.1, 0.1, 0.1);
 
-    G4Material* Ti = new G4Material("Ti", density = 11.29*g/cm3, ncomp=1);
+    G4Material* Ti = new G4Material("Ti", density = 4.5*g/cm3, ncomp=1);
     G4Element* TiElement = new G4Element( "Titanium", "Ti", z = 22.,  a = 47.9 * g/mole );
     Ti->AddElement(TiElement, natoms = 1);
 	materialColor["Ti"] = G4Color(0.1, 1, 0.1);

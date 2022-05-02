@@ -1,0 +1,47 @@
+# Macro file for the initialization
+# in interactive session
+
+#Set geometry
+# 100 TESSERACT with virtual detector
+# 101           with HeRALD detector (not implemented yet)
+# 102           with SPICE  detector (not implemented yet)
+# 200 Rock
+
+/geometry/type 100
+/geometry/setByVersion Hybrid_V1_1
+/geometry/construct
+
+/run/initialize
+/tracking/verbose 0
+
+/filter/recordWhenHit virtualDetector
+
+#/gps/particle geantino
+#/gps/energy 1 keV
+
+/gps/particle   ion
+/gps/ion 19 40  # K-40
+#/gps/ion 27 60  # Co-60
+#/gps/ion 82 210 # Pb-210
+#/gps/ion 90 232 # Th-232
+#/gps/ion 92 238 # U-238
+
+/gps/pos/type Volume
+/gps/pos/shape Para
+/gps/pos/centre 0 0 0 mm  
+/gps/pos/halfx  2 m
+/gps/pos/halfy  2 m
+/gps/pos/halfz  2 m
+
+#/gps/pos/confine CPMXCWall
+/gps/pos/confine ShieldPEBox
+#/gps/pos/confine ShieldPbBox
+#/gps/pos/confine ShieldSSBox
+
+/gps/ang/type iso 
+
+/gps/energy 0 keV
+
+/run/printProgress 100000
+/run/beamOn 100000000
+#/run/beamOn 10000
