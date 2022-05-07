@@ -18,3 +18,6 @@ target_link_libraries( RockSpecAnalyzer ${ROOT_LIBRARIES} )
 
 add_executable( EnergyDepVSIntialEnergy EnergyDepVSIntialEnergy.cpp )
 target_link_libraries( EnergyDepVSIntialEnergy ${ROOT_LIBRARIES} )
+
+add_executable( PlotSpectra PlotSpectra.cpp )
+target_link_libraries( PlotSpectra ${ROOT_LIBRARIES} )
