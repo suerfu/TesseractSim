@@ -13,6 +13,7 @@
 #include "GeometryConstructionMessenger.hh"
 #include "GeometryManager.hh"
 #include "GeoShielding.hh"
+#include "GeoWalls.hh"
 #include "GeoCryostat.hh"
 #include "FarsideDetectorMessenger.hh"
 #include "FarsideDetector.hh"
@@ -105,9 +106,11 @@ void GeometryConstruction::ConstructUserVolumes(){
 	if(geoType/100==1){ //TESSERACT
 	        G4cout<<"TESSERACT"<<G4endl;
 			//Each component is instantiated and constructed seperately.
-			GeoShielding* TESSERACTShield = new GeoShielding();
+      GeoShielding* TESSERACTShield = new GeoShielding();
+			GeoWalls* TESSERACTWalls = new GeoWalls();
 			GeoCryostat* TESSERACTCryostat = new GeoCryostat();
-			TESSERACTShield->Construct();
+      TESSERACTShield->Construct();
+			TESSERACTWalls->Construct();
 			TESSERACTCryostat->Construct();
 			if(geoType%100==0){
 				G4cout<<" Dummy detector"<<G4endl;

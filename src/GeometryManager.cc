@@ -256,6 +256,8 @@ void  GeometryManager::DefineMaterials( ){
 
 	materialColor["boratedPoly_15"] = G4Color(0, 0, 1);
 
+
+
     // ***********************************
 	// Sodium Iodide
     // ***********************************
@@ -333,6 +335,7 @@ void  GeometryManager::DefineMaterials( ){
     G4Element* elMn = new G4Element(name = "Manganese"  , symbol = "Mn" , z = 25. , a =  54.938*g/mole);
     G4Element* elMg = new G4Element(name = "Magnesium"  , symbol = "Mg" , z = 12. , a =  24.405*g/mole);
     G4Element* elCa = new G4Element(name = "Calsium"    , symbol = "Ca" , z = 20. , a =  40.078*g/mole);
+		G4Element* elC  = new G4Element(name = "Carbon", symbol = "C", z = 6.0, a = 12.011*g/mole);
     G4Element* elNa = new G4Element(name = "Sodium"     , symbol = "Na" , z = 11. , a =  22.990*g/mole);
     G4Element* elK  = new G4Element(name = "Potassium"  , symbol = "K" ,  z = 19. , a =  39.098*g/mole);
     G4Element* elP  = new G4Element(name = "Phosphorus" , symbol = "P"  , z = 15. , a =  30.974*g/mole);
@@ -412,6 +415,23 @@ void  GeometryManager::DefineMaterials( ){
 
     // ============ Oxygen =============
     rock->AddElement( elO, fracM_O );
+
+
+		// ***********************************
+		// Concrete
+		// ***********************************
+		G4Material* concrete = new G4Material("concrete",density= 2.3*g/cm3,nComponents=10);
+		concrete->AddElement(elH,0.01);
+		concrete->AddElement(elC,0.001);
+		concrete->AddElement(elO,0.529107);
+		concrete->AddElement(elNa,0.016);
+		concrete->AddElement(elMg,0.002);
+		concrete->AddElement(elAl,0.033872);
+		concrete->AddElement(elSi,0.337021);
+		concrete->AddElement(elK,0.013);
+		concrete->AddElement(elCa,0.044);
+		concrete->AddElement(elFe,0.014);
+		materialColor["concrete"] = G4Color(0.1, 0.1, 1);
 
 
     G4cout << *(G4Material::GetMaterialTable()) << G4endl;
