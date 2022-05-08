@@ -63,9 +63,9 @@ struct Spectrum{
 
     Spectrum(){
         title = "N/A";
-        style = 0;
-        color = 0;
-        width = 1;
+        style = 1;
+        color = 1;
+        width = 2;
     }
 
     string title;
@@ -205,7 +205,6 @@ int main( int argc, char* argv[]){
     TCanvas canvas;
     TLegend legend;
 
-    
     // This code block is simply used to check the output structure.
     //
     for( auto i=spectrumArray.begin(); i!=spectrumArray.end(); i++ ){
@@ -241,15 +240,27 @@ int main( int argc, char* argv[]){
             cout << endl;
 
             temp.Sumw2();
+
             duration /= (24*3600);  // convert from seconds to days.
             double dE = (maxBin-minBin)/Nbins;
-            temp.Scale( 1./duration/activeMass/dE );
+            temp.Scale( activity/duration/activeMass/dE );
+
             hist->Add( &temp );
         }
 
-        histArray.push_back(hist);
+        if( i==spectrumArray.begin() ){
+            hist->Draw();
+        }
+        else{
+            hist->Draw("same");
+        }
 
+        legend.AddEntry( hist, i->title.c_str() );
+
+        histArray.push_back(hist);
     }
+
+    legend.Draw();
     
     if( file!=0 ){
         file->cd();
