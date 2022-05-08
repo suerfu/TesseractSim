@@ -120,12 +120,22 @@ int main( int argc, char* argv[]){
         }
     }
 
+    // Check if file needs to be saved.
+    //
+    TFile* file = 0;
+    for( unsigned int i=0; i<argc; i++){
+        if( string(argv[i])=="--output" ){
+            file = new TFile( argv[++i], "NEW");
+            break;
+        }
+    }
+
     // Get volume of interest.
     //
     string voi = "";
     for( unsigned int i=0; i<argc; i++){
         if( string(argv[i])=="--voi" ){
-            voi = string( argv[i++]);
+            voi = string( argv[++i]);
             break;
         }
     }
@@ -188,7 +198,7 @@ int main( int argc, char* argv[]){
 
     // ROOT objects to store the results.
     //
-    vector<TH1F> histArray;
+    vector<TH1F*> histArray;
         // used to store final results in the desired output
     vector<TH1F> tempArray;
         // used to store temporary components.
@@ -219,7 +229,7 @@ int main( int argc, char* argv[]){
             for( auto k=j->second.begin(); k!=j->second.end(); k++){
                 cout << "\t adding" << *k << endl;
 
-                //FillHistFromTree( &temp, *k, voi );
+                FillHistFromTree( &temp, *k, voi );
 
                 TMacro mac_duration = GetMacro( *k, "duration" );
                 duration = GetDuration( mac_duration );
@@ -236,8 +246,21 @@ int main( int argc, char* argv[]){
             temp.Scale( 1./duration/activeMass/dE );
             hist->Add( &temp );
         }
+
+        histArray.push_back(hist);
+
     }
     
+    if( file!=0 ){
+        file->cd();
+            // Since other files have been opened, one needs to change working directory back and save.
+        for( auto itr = histArray.begin(); itr!=histArray.end(); itr++ ){
+            (*itr)->Write();
+        }
+        canvas.Write();
+        file->Write();
+        file->Close();
+    }
 
     return 0;
 
@@ -263,7 +286,10 @@ TMacro GetMacro( string rootName, string macroName){
         }
     }
 
+    cerr << "Failed to get macro " << macroName << " from file " << rootName << endl;
+
     file->Close();
+
     return TMacro();
 
 }
@@ -293,21 +319,35 @@ void FillHistFromTree( TH1F* hist, string rootName, string voi, string treeName 
 
 
 double GetActiveMass( TMacro geoMacro, string voi ){
-    stringstream ss(  geoMacro.GetLineWith( voi.c_str() )->String().Data() );
-    string foo;
-    double mass;
-    ss >> foo >> mass;
+
+    double mass = 1;
+
+    auto tmp = geoMacro.GetLineWith( voi.c_str() );
+
+    if( tmp!= 0 ){
+        stringstream ss(  tmp->String().Data() );
+        string foo;
+        double mass;
+        ss >> foo >> mass;
+    }
+    else{
+        cerr << "Failed to get active mass of " << voi << endl;
+    }
 
     return mass;
 }
 
 
-double GetDuration( TMacro geoMacro ){
-    string dur = "duration";
-    stringstream ss(  geoMacro.GetLineWith( dur.c_str() )->String().Data() );
-    double duration;
-    ss >> duration;
+double GetDuration( TMacro macro ){
 
+    double duration = -1;
+
+    auto tmp = (TObjString*) ( macro.GetListOfLines()->First() );
+    TString str( tmp->GetString() );
+
+    stringstream ss( str.Data() );
+    ss >> duration;
+    
     return duration;
 }
 
