@@ -76,8 +76,6 @@ void TrackReader::ConfigureTTree( TTree* tree ){
         tree->Branch( edepName.c_str(), &energyDeposit[volumeName], rootName.c_str() );
             // Set address for ROOT tree branch
     }
-
-
 }
 
 
@@ -109,6 +107,11 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
     //
     TFile* outputFile = new TFile( outputStr.c_str(), "NEW" );
 
+    TMacro gTab;
+        // Keep one copy of geometry table in the output.
+        // By default, it will be the first occurance.
+        // By default, the geometry is assumed to be identical in all the runs in the same batch.
+
     if( !outputFile ){
         cerr << "Error creating output file " << outputStr << endl;
         return;
@@ -135,10 +138,17 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
         TMacro mac2 = GetMacro( *itr, "geometryTable" );
             // feature since ver. 0.1.1
 
+        if( itr==inputStr.begin() ){
+            gTab = mac2;
+        }
+
         Tsimulated += GetTimeSimulated( mac1, mac2 );
     }
 
     outputFile->cd();
+
+    tree->Write();
+    gTab.Write();
 
     stringstream ss;
     ss << Tsimulated;
@@ -147,9 +157,9 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
     mac.AddLine( ss.str().c_str() );
     mac.Write();
 
-    tree->Write();
     outputFile->Write();
     outputFile->Close();
+
     cout << "Output file " << outputStr << " written.\n";
 
 }
