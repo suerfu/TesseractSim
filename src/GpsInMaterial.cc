@@ -1,7 +1,7 @@
 #include "G4PhysicalVolumeStore.hh"
 #include "G4VisExtent.hh"
 
-#include "Generator/GpsInMaterial.hh"
+#include "GpsInMaterial.hh"
 #include "G4RunManager.hh"
 
 //namespace Generator
@@ -30,7 +30,7 @@
 
       if(fVolumesInMaterial.empty())
 	throw std::runtime_error("Generator::GpsInMaterial::GeneratePrimaries : no material set");
-      
+
       G4VPhysicalVolume* selectedVolume = pickVolume();
 
       G4VisExtent extent=selectedVolume->GetLogicalVolume()->GetSolid()->GetExtent();
@@ -50,10 +50,10 @@
 
     }
 
-  
-  void  GpsInMaterial::SetMaterial(const G4String& materialName) 
+
+  void  GpsInMaterial::SetMaterial(const G4String& materialName)
   {
-   
+
     fVolumesInMaterial.clear();
     fCumulativeMaterialVolume = 0;
     G4PhysicalVolumeStore *PVStore = G4PhysicalVolumeStore::GetInstance();
@@ -68,10 +68,10 @@
       }
       i++;
     }
-     
+
     if(fVolumesInMaterial.empty())
       throw std::runtime_error("Generator::GpsInMaterial::SetMaterial did not find volume made of '"+materialName+"'");
-    
+
 
   }
 
