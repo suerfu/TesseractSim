@@ -38,5 +38,5 @@ MXCWallHeight      200
 #shield cube center z offset w.r.t MXC center
 shieldZOffset    81.25
 ##OuterShield 1 Bpoly 2 PE
-OuterShieldThickness    100
+OuterShieldThickness    200
 OuterShieldMaterial    2
