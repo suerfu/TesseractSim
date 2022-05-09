@@ -43,9 +43,9 @@ GeometryConstruction::GeometryConstruction() : G4VUserDetectorConstruction(){
     // Set default values for world.
 	//FIXME! change to dimension of the experimental hall.
 
-    world_x = 10.*m;
-    world_y = 10.*m;
-    world_z = 10.*m;
+    world_x = 20.*m;
+    world_y = 20.*m;
+    world_z = 20.*m;
 
     simple_cube = new SimpleCube();
     fFarsideMessenger = new FarsideDetectorMessenger();
