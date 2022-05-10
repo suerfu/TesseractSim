@@ -92,6 +92,8 @@ void GeoWalls::Construct(){
 															0,
 															fCheckOverlaps);
 
+  WallLogic->SetVisAttributes(G4VisAttributes::Invisible);
+
 
   //Wall that are made up of Concrete
   G4Box* Main2 = new G4Box("Main2", (Wall1_Xoffset+Wall3_Xoffset+Finish_Wall_thickness)/2.0,
@@ -119,6 +121,8 @@ void GeoWalls::Construct(){
                             false,
                             0,
                             fCheckOverlaps);
+
+  WallLogic_concrete->SetVisAttributes(G4VisAttributes::Invisible);
 
 }
 }
