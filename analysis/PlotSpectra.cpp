@@ -421,7 +421,7 @@ bool CheckArguments( int argc, char* argv[] ){
 
 
 void PrintUsage( string name ){
-    cout << "Usage: " << name << "--hist Nbins Min Max --voi VolOfInterest --title Title1 --add Act1/Flux1 foo1.root bar1.root [--add foo2.root bar2.root] [--color N --style N --width N]" << endl;
+    cout << "Usage: " << name << " --hist Nbins Min Max --voi VolOfInterest --title Title1 --add Act1/Flux1 foo1.root bar1.root [--add foo2.root bar2.root] [--color N --style N --width N]" << endl;
     cout << "\t Use --title to add multiple curves onto the same plot\n";
     cout << "\t Activity/flux in the unit of Bq/kg and No./m2/s, respectively.\n";
     cout << "\t --color, --style and --width are used to specify optional line color and line style using ROOT code scheme.\n";
