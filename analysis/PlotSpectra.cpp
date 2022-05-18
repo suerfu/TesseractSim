@@ -18,6 +18,7 @@
 //      --title Name1
 //      --add Activity1/Flux1 foo1.root [foo2.root ...]
 //      --add Activity2/Flux2 bar1.root [bar2.root ...]
+//      --veto VolName Threshold
 //      --color C1 [integer using ROOT code scheme]
 //      --style S1 [integer using ROOT code scheme]
 
@@ -74,6 +75,25 @@ struct Spectrum{
     int color;
     int width;
 
+    void AddVetoVolume( string vol, double threshold){
+        vetoInfo[vol] = threshold;
+    }
+
+    bool CheckVeto( string vol, double threshold ){
+        if( vetoInfo.find(vol)!=vetoInfo.end() ){
+            return true;
+        }
+        else if( vetoInfo[vol] < threshold ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    map<string, double> vetoInfo;
+        // Stores names of active volumes and their corresponding energy thresholds.
+
     map<string, vector<string> > components;
         // first keyword is activity/flux
         // second is basically a list of files to be processed and added
@@ -97,7 +117,7 @@ double GetActiveMass( TMacro macro, string voi );
 
 // Fill histogram from another ROOT tree.
 //
-void FillHistFromTree( TH1F* hist, string rootName, string voi, string treeName = "events" );
+void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, double> vetoInfo );
 
 
 int main( int argc, char* argv[]){
@@ -177,6 +197,11 @@ int main( int argc, char* argv[]){
                     temp.style = atoi( argv[++i] );
                 else if( string(argv[i])=="--width" )
                     temp.width = atoi( argv[++i] );
+                else if( string(argv[i])=="--veto" ){
+                    string vol = string( argv[++i] );
+                    double threshold = atof( argv[++i] );
+                    temp.AddVetoVolume( vol, threshold );
+                }
 
                 else if( string(argv[i])=="--add" ){
                     activity = argv[++i];
@@ -221,6 +246,11 @@ int main( int argc, char* argv[]){
 
             double activity = atof( j->first.c_str() );
             cout << "Activity: " << activity << endl;
+            cout << "With veto: ";
+            for( auto itr=i->vetoInfo.begin(); itr!=i->vetoInfo.end(); itr++ ){
+                cout << itr->first << " " << itr->second << " keV, ";
+            }
+            cout << endl;
 
             TH1F temp( j->first.c_str(), "", Nbins, minBin, maxBin );
             double duration = 0;
@@ -228,7 +258,7 @@ int main( int argc, char* argv[]){
             for( auto k=j->second.begin(); k!=j->second.end(); k++){
                 cout << "\t adding" << *k << endl;
 
-                FillHistFromTree( &temp, *k, voi );
+                FillHistFromTree( &temp, *k, voi, i->vetoInfo );
 
                 TMacro mac_duration = GetMacro( *k, "duration" );
                 duration = GetDuration( mac_duration );
@@ -306,7 +336,9 @@ TMacro GetMacro( string rootName, string macroName){
 }
 
 
-void FillHistFromTree( TH1F* hist, string rootName, string voi, string treeName ){
+void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, double> vetoInfo ){
+
+    string treeName = "events";
 
     TFile file( rootName.c_str(), "READ" );
     TTree* tree = (TTree*) file.Get( treeName.c_str() );
@@ -315,12 +347,37 @@ void FillHistFromTree( TH1F* hist, string rootName, string voi, string treeName 
     string plotVar = string( "edep_" ) + voi;
     tree->SetBranchAddress( plotVar.c_str(), &energy);
 
-    for( unsigned long long n=0; n<tree->GetEntries(); n++){
+    vector< string > volName;
+    vector< double > thresholds;
+    vector< double > vetoVar;
+
+    for( auto itr=vetoInfo.begin(); itr!=vetoInfo.end(); itr++ ){
+        volName.push_back( string("edep_") + itr->first );
+        thresholds.push_back( itr->second );
+        vetoVar.push_back( 0 );
+        tree->SetBranchAddress( volName[volName.size()-1].c_str(), &vetoVar[vetoVar.size()-1]);
+    }
+
+    long long Nentries = tree->GetEntry();
+    cout << "There are " << Nentries << " entries in " << rootName << endl;
+
+    bool fill = false;
+
+    for( unsigned long long n=0; n<Nentries; n++){
         tree->GetEntry(n);
         if( energy>1e-9 ){
-            //if( 1000*energy_veto<vetoThreshold )
-            hist->Fill( energy );
-            //}
+
+            fill = true;
+
+            for( unsigned int i=0; i<volName.size(); i++ ){
+                if( vetoVar[i] > thresholds[i] ){
+                    cout << "Veto: " << volName[i] << " Edep = " << vetoVar[i] << " keV, greater than threshold " << thresholds[i] << "keV" << endl;
+                    fill = false;
+                }
+            }
+            if( fill==true ){
+                hist->Fill( energy );
+            }
         }
     }
 

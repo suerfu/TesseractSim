@@ -110,25 +110,32 @@ void GeometryConstruction::ConstructUserVolumes(){
 			TESSERACTShield->Construct();
 			TESSERACTCryostat->Construct();
 			if(geoType%100==0){
-				G4cout<<" Dummy detector"<<G4endl;
 				G4Tubs* virtualDetector_solid = new G4Tubs( "virtualDetectorsolid",
 							0,
-							GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
-							(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
+							10*cm/2,//GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
+							3.33/2*cm,//(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
 							0, 2*M_PI);
 				//G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
 				//			GeometryManager::Get()->GetMaterial("G4_Galactic"),
 				//			"virtualDetectorLV");
 
-        G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
-      				GeometryManager::Get()->GetMaterial( "LHe" ),
-      				"virtualDetectorLV");
+                G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
+      			            GeometryManager::Get()->GetMaterial( "G4_Ge" ),
+      			            "virtualDetectorLV");
 
-
-				G4VPhysicalVolume * virtualDetector = new G4PVPlacement(0,
-							G4ThreeVector(0,0,-10*mm),
+				G4VPhysicalVolume * virtualDetector1 = new G4PVPlacement(0,
+							G4ThreeVector(0,0,-50*mm),
 							virtualDetectorLogic,
-							"virtualDetector",
+							"GeDetTop",
+							GeometryManager::Get()->GetLogicalVolume("world"),
+							false,
+							0,
+							fCheckOverlaps);
+
+				G4VPhysicalVolume * virtualDetector2 = new G4PVPlacement(0,
+							G4ThreeVector(0,0,50*mm),
+							virtualDetectorLogic,
+							"GeDetBot",
 							GeometryManager::Get()->GetLogicalVolume("world"),
 							false,
 							0,

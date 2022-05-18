@@ -221,6 +221,7 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
         if( NewEvent( rdata.proc_name )==true || n==nEntries-1 ){
 
             ProcessPulseArray( tree );
+                // filling is done at this step.
 
             map<string, MCPulseArray>::iterator clr;
             for( clr=pulseArrayAV.begin(); clr!=pulseArrayAV.end(); clr++ ){
