@@ -74,39 +74,10 @@ RunAction::RunAction( CommandlineArguments* c) : G4UserRunAction(), fRunActionMe
 }
 
 
-RunAction::~RunAction(){}
+RunAction::~RunAction(){
 
-
-CommandlineArguments* RunAction::GetCommandlineArguments(){
-    return fCmdlArgs;
-}
-
-
-void RunAction::SetOutputFileName( G4String newname ){
-    outputName = newname;
-}
-
-
-void RunAction::BeginOfRunAction(const G4Run* /*run*/){
-
-    // If output name is specified, create a ROOT file and a TTree.
+    // Moved from EndOfRun so that multiple runs can be recorded in a single file.
     //
-    if( outputName!="" ){
-
-        outputFile = new TFile(outputName, "NEW");
-        G4cout << "ROOT file " << outputName << " created." << G4endl;
-
-        if( outputFile->IsOpen() ){
-            dataTree = new TTree("events", "Track-level info for the run");
-            G4cout << "TTree object created." << G4endl;
-        }
-    }
-}
-
-
-
-void RunAction::EndOfRunAction(const G4Run* /*run*/){
-
     if( outputFile!=0 ) {
 
         TMacro ver( "version" );
@@ -149,6 +120,37 @@ void RunAction::EndOfRunAction(const G4Run* /*run*/){
         outputFile->Close();
     }
 }
+
+
+CommandlineArguments* RunAction::GetCommandlineArguments(){
+    return fCmdlArgs;
+}
+
+
+void RunAction::SetOutputFileName( G4String newname ){
+    outputName = newname;
+}
+
+
+void RunAction::BeginOfRunAction(const G4Run* /*run*/){
+
+    // If output name is specified, create a ROOT file and a TTree.
+    //
+    if( outputName!="" && outputFile==0 ){
+
+        outputFile = new TFile(outputName, "NEW");
+        G4cout << "ROOT file " << outputName << " created." << G4endl;
+
+        if( outputFile->IsOpen() ){
+            dataTree = new TTree("events", "Track-level info for the run");
+            G4cout << "TTree object created." << G4endl;
+        }
+    }
+}
+
+
+
+void RunAction::EndOfRunAction( const G4Run* run ){}
 
 
 

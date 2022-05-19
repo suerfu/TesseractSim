@@ -62,12 +62,6 @@ void GeoShielding::Construct(){
 
 
   G4bool hasOuterShield = true;
-  G4double OuterShieldLength = GeometryManager::Get()->GetDimensions("OuterShieldLength");
-  hasOuterShield *= OuterShieldLength>0;
-  G4double OuterShieldBreadth = GeometryManager::Get()->GetDimensions("OuterShieldBreadth");
-  hasOuterShield *= OuterShieldBreadth>0;
-  G4double OuterShieldHeight = GeometryManager::Get()->GetDimensions("OuterShieldHeight");
-  hasOuterShield *= OuterShieldHeight>0;
   G4double OuterShieldThickness = GeometryManager::Get()->GetDimensions("OuterShieldThickness");
   hasOuterShield *= OuterShieldThickness>0;
   G4int    OuterShieldMaterial = GeometryManager::Get()->GetDimensions("OuterShieldMaterial"); //1 boratedPoly_15 2 PE
@@ -80,7 +74,7 @@ void GeoShielding::Construct(){
 	G4Tubs* cavityTubs = new G4Tubs( name+"Cavity", 0, cavityRadius,
 											boxHeight/2,
 											0, 2*M_PI);
-	G4String layerName[3] = {"SS","Pb","PE"};
+  G4String layerName[3] = {"SS","Pb","PE"};
 	G4LogicalVolume* shieldMotherVolume = worldLogic;
 	for(int i=0; i<3; i++){
 		G4double layerThickness = GeometryManager::Get()->GetDimensions(layerName[i]+"Thickness");
@@ -167,26 +161,60 @@ void GeoShielding::Construct(){
 	}
 
   if (hasOuterShield) {
-    //G4Box* boratedWaterSheild = new G4Box( "BoratedWaterSheild", 1485*mm/2, 1485*mm/2, 1000*mm/2);
-    //G4Box* hole = new G4Box("Hole",1385*mm/2 , 1385*mm/2, 2000*mm/2 );
-    G4Box* boratedWaterSheild = new G4Box("BoratedWaterSheild", OuterShieldLength/2.0+OuterShieldThickness, OuterShieldBreadth/2.0+OuterShieldThickness, OuterShieldHeight/2.0);
-    G4Box* hole = new G4Box("Hole",OuterShieldLength/2.0, OuterShieldBreadth/2.0, OuterShieldHeight);
+
+    boxWidth     = GeometryManager::Get()->GetDimensions("shieldWidth");
+    boxHeight    = GeometryManager::Get()->GetDimensions("shieldHeight");
+    G4Box* boratedWaterSheild = new G4Box("BoratedWaterSheild", boxWidth/2.0+OuterShieldThickness, boxWidth/2.0+OuterShieldThickness, boxHeight/2.0);
+    G4Box* hole = new G4Box("Hole",boxWidth /2.0, boxWidth /2.0, boxHeight);
     G4SubtractionSolid* bucketShielding= new G4SubtractionSolid("BucketShielding", boratedWaterSheild, hole, 0, G4ThreeVector{0,0,0});
 
     G4LogicalVolume* bucketShieldingLogic = new G4LogicalVolume( bucketShielding,
                               GeometryManager::Get()->GetMaterial(OuterShieldMaterial==1?"boratedPoly_15"
                                                 :OuterShieldMaterial==2?"PE"
                                                 :"G4_Galactic"),
-                              name+"bucketShieldingLV");
+                             name+"bucketShieldingLV");
 
     G4VPhysicalVolume* bucketShieldingPhysical = new G4PVPlacement( 0,
-                              G4ThreeVector(0,0,-10*mm),
+                              G4ThreeVector(0,0,shieldZOffset),
                               bucketShieldingLogic,
                               "boratedWaterSheild",
                               worldLogic,
                               false,
                               0,
                               fCheckOverlaps);
+
+
+
+
+    G4Box* TopBorateWater = new G4Box("TopBorateWater", boxWidth /2.0+OuterShieldThickness,
+                                         boxWidth /2.0+OuterShieldThickness,
+                                         OuterShieldThickness/2.0);
+
+    G4Tubs* donutTubsHole = new G4Tubs("DonutTubsHole", 0, (cavityRadius+collarThickness),OuterShieldThickness, 0, 2*M_PI);
+
+    G4SubtractionSolid* TopBorateWaterSheild= new G4SubtractionSolid("TopBorateWaterSheild", TopBorateWater, donutTubsHole, 0, G4ThreeVector{0,0,0} );
+
+    G4LogicalVolume* TopBorateWaterSheildLogic = new G4LogicalVolume( TopBorateWaterSheild,
+                      GeometryManager::Get()->GetMaterial(OuterShieldMaterial==1?"boratedPoly_15":OuterShieldMaterial==2?"PE":"G4_Galactic")
+                                                               ,name+"bucketShieldingLV");
+
+    G4VPhysicalVolume* TopBorateWaterSheildPhysical = new G4PVPlacement( 0,
+      G4ThreeVector(0,0,GeometryManager::Get()->GetDimensions("shieldHeight")/2+shieldZOffset+OuterShieldThickness/2.0),
+                                                    TopBorateWaterSheildLogic,"TopBorateWaterSheild",worldLogic,false,0,fCheckOverlaps);
+
+
+    G4Box* BottomBorateWaterSheild= new G4Box("BottomBorateWaterSheild", boxWidth /2.0+OuterShieldThickness,
+                                                 boxWidth /2.0+OuterShieldThickness,
+                                                 OuterShieldThickness/2.0);
+
+    G4LogicalVolume* BottomBorateWaterSheildLogic = new G4LogicalVolume( BottomBorateWaterSheild,
+                        GeometryManager::Get()->GetMaterial(OuterShieldMaterial==1?"boratedPoly_15":OuterShieldMaterial==2?"PE":"G4_Galactic")
+                                                               ,name+"BottomBorateWaterSheildLV");
+
+    G4VPhysicalVolume* BottomBorateWaterSheildPhysical = new G4PVPlacement( 0, G4ThreeVector(0,0,-GeometryManager::Get()->GetDimensions("shieldHeight")/2
+                                                                              +shieldZOffset-OuterShieldThickness/2.0),
+                      BottomBorateWaterSheildLogic, "BottomBorateWaterSheild",worldLogic,false,0,fCheckOverlaps);
+
   }
 
 

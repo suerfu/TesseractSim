@@ -220,6 +220,7 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
         //
         if( NewEvent( rdata.proc_name )==true || n==nEntries-1 ){
 
+            //cout << "Processing event " << eventID << " at entry " << n <<endl;
             ProcessPulseArray( tree );
                 // filling is done at this step.
 
@@ -254,8 +255,6 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
             }
         }
     }
-
-    //tree->Fill();
 }
 
 
@@ -264,6 +263,8 @@ void TrackReader::ProcessPulseArray( TTree* tree ){
 
     clusterIndex = 0;
 
+    // Sort the hits in active volumes and voi by time order.
+    //
     map<string, MCPulseArray>::iterator itr;
     for( itr=pulseArrayAV.begin(); itr!=pulseArrayAV.end(); itr++ ){
         (itr->second).Sort();
@@ -273,6 +274,11 @@ void TrackReader::ProcessPulseArray( TTree* tree ){
     }
 
     // Find the first interaction event.
+    // If the interaction time is positive, then enter the loop.
+    // This variable is used as a state variable:
+    //      if -1 is passed, it will always return the first interaction time.
+    // Suerfu on 2022-5-18: using -1 as default will create problems when passing it to the FindEventTime
+    // function when two active volumes are involved.
     //
     double eventTime = -1;
     string volName;
@@ -288,20 +294,23 @@ void TrackReader::ProcessPulseArray( TTree* tree ){
             if( itr->first==volName ){
                 MCPulse p = (itr->second).FindPrimaryInteraction( eventTime, daqWindow );
                 energyDeposit[ itr->first ] = p.GetEnergy()[0]+p.GetEnergy()[1]+p.GetEnergy()[2];
+                //cout << "Primary " << itr->first << " " << energyDeposit[itr->first] << endl;
             }
             else{
                 MCPulse p = (itr->second).FindCoincidentInteraction( eventTime, coinWindow, daqWindow );
                 energyDeposit[ itr->first ] = p.GetEnergy()[0]+p.GetEnergy()[1]+p.GetEnergy()[2];
+                //cout << "Act Coin " << itr->first << " " << energyDeposit[itr->first] << endl;
             }
         }
 
         for( itr=pulseArrayVOI.begin(); itr!=pulseArrayVOI.end(); itr++){
             MCPulse p = (itr->second).FindCoincidentInteraction( eventTime, coinWindow, daqWindow );
             energyDeposit[ itr->first ] = p.GetEnergy()[0]+p.GetEnergy()[1]+p.GetEnergy()[2];
+            //cout << "N/A Coin " << itr->first << " " << energyDeposit[itr->first] << endl;
         }
 
         timeStamp = eventTime;
-        tree -> Fill();
+        tree->Fill();
         ID++;
             // Since the tree may have to be filled multiple times, it has to be done in this function.
 
@@ -310,7 +319,6 @@ void TrackReader::ProcessPulseArray( TTree* tree ){
 
         FindEventTime( volName, eventTime );
     }
-
 }
 
 
@@ -342,17 +350,25 @@ void TrackReader::FindEventTime( string& volName, double& eventTime ){
 
     for( itr=pulseArrayAV.begin(); itr!=pulseArrayAV.end(); itr++){
 
-        if( itr==pulseArrayAV.begin() ){
+        // Needed to properly initialize when there are multiple active volumes.
+        // in which case GetNextInteractionTime could return -1.
+        //
+        if( eventTime < 0 || itr==pulseArrayAV.begin() ){
             volName = itr->first;
-            eventTime = (itr->second).GetNextInteractionTime();
+            eventTime = (itr->second).GetNextInteractionTime();        
         }
         else{
-            if( eventTime > (itr->second).GetNextInteractionTime() ){
+            double intTime = (itr->second).GetNextInteractionTime();
+
+            // One should check if interaction time is greater than -1
+            //
+            if( eventTime > intTime && intTime > 0 ){
                 volName = itr->first;
                 eventTime = (itr->second).GetNextInteractionTime();
             }
         }
     }
+    //cout << "\nEvent time is " << eventTime << " in " << volName << endl;
 }
 
 
