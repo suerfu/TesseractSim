@@ -20,6 +20,7 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWith3VectorAndUnit.hh"
+#include "G4UIcmdWithABool.hh"
 
 class GeneratorAction;
 class G4UIdirectory;
@@ -30,6 +31,7 @@ class G4UIcmdWithADouble;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithADoubleAndUnit;
 class G4UIcmdWith3VectorAndUnit;
+class G4UIcmdWithABool;
 
 class GeneratorMessenger : public G4UImessenger {
 
@@ -59,6 +61,9 @@ private:
 	G4UIcmdWithADoubleAndUnit* cmdSetWall_y;
 	G4UIcmdWithADoubleAndUnit* cmdSetWall_z;
 	G4UIcmdWith3VectorAndUnit* CmdBoxCenter;
+
+	G4UIcmdWithABool* cmdGpsInMaterialBuild;
+	G4UIcmdWithAString* cmdSetGpsInMaterialMaterial;
 
 
 };
