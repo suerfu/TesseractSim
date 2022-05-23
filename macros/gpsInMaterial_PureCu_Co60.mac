@@ -7,7 +7,7 @@
 # 102           with SPICE  detector (not implemented yet)
 # 200 Rock
 /geometry/type 100
-/geometry/setByVersion Ricochet_V1_1
+/geometry/setByVersion Hybrid_V2_12_radiogenic
 /geometry/construct
 
 # Initialize kernel
@@ -35,11 +35,11 @@
 
 #using GPSInMaterial
 /generator/GpsInMaterialBuild true
-/generator/GpsInMaterialBuild/setMaterial SS
+/generator/GpsInMaterialBuild/setMaterial PureCu
 
 #Using gps
 /gps/particle ion
-/gps/ion 90 232
+/gps/ion 27 60
 /gps/energy 0 keV
 
 /run/printProgress 10000
