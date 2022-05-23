@@ -14,8 +14,19 @@
 
 GeneratorMessenger::GeneratorMessenger( GeneratorAction* generator )  : G4UImessenger(), primaryGenerator(generator), primaryGeneratorDir(0) {
 
-	primaryGeneratorDir = new G4UIdirectory("/generator/");
-	primaryGeneratorDir->SetGuidance("Generator position, momentum and energy spectrum control.");
+	  primaryGeneratorDir = new G4UIdirectory("/generator/");
+	  primaryGeneratorDir->SetGuidance("Generator position, momentum and energy spectrum control.");
+
+	  cmdGpsInMaterialBuild = new G4UIcmdWithABool("/generator/GpsInMaterialBuild", this);
+	  cmdGpsInMaterialBuild->SetGuidance("Set true if one wants to build the GpsInMaterial");
+	  cmdGpsInMaterialBuild->SetParameterName("false", false);
+	  cmdGpsInMaterialBuild->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+
+		cmdSetGpsInMaterialMaterial= new G4UIcmdWithAString("/generator/GpsInMaterialBuild/setMaterial", this);
+		cmdSetGpsInMaterialMaterial->SetGuidance("Set the name of the particle.");
+		cmdSetGpsInMaterialMaterial->SetParameterName("geantino", false);
+		cmdSetGpsInMaterialMaterial->AvailableForStates(G4State_PreInit, G4State_Idle);
 
     cmdSetSpectrum = new G4UIcmdWithAString("/generator/spectrum", this);
     cmdSetSpectrum->SetGuidance("Set the ROOT file from which to sample position, direction and energy.");
@@ -86,6 +97,8 @@ GeneratorMessenger::GeneratorMessenger( GeneratorAction* generator )  : G4UImess
 
 GeneratorMessenger::~GeneratorMessenger(){
 
+		delete cmdGpsInMaterialBuild;
+		delete cmdSetGpsInMaterialMaterial;
     delete cmdSetSpectrum;
 		delete cmdSetParticle;
 		delete cmdSetSurfaceName;
@@ -126,6 +139,13 @@ void GeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValue){
 	if( command == CmdBoxCenter){
 				 primaryGenerator->SetBoxCenter(CmdBoxCenter->ConvertToDimensioned3Vector(newValue));
 		 }
+	if( command == cmdGpsInMaterialBuild )	{
+			   primaryGenerator->GpsInMaterialBuild( cmdGpsInMaterialBuild->ConvertToBool(newValue));
+		 }
+
+	if( command == cmdSetGpsInMaterialMaterial){
+ 				 primaryGenerator->GpsInMaterialSetMaterial( newValue);
+ 		 }
 
 // if( command == cmdSetEnergy ){
 //				primaryGenerator->SetEnergy();

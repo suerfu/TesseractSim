@@ -1,0 +1,46 @@
+# Macro file for the initialization
+# in interactive session
+
+#Set geometry
+# 100 TESSERACT with virtual detector
+# 101           with HeRALD detector (not implemented yet)
+# 102           with SPICE  detector (not implemented yet)
+# 200 Rock
+/geometry/type 100
+/geometry/setByVersion Ricochet_V1_1
+/geometry/construct
+
+# Initialize kernel
+/run/initialize
+/tracking/verbose 0
+
+#/control/getEnv a
+#/control/getEnv b
+
+#/random/setSeeds {a} {b}
+
+#/filter/recordWhenHit virtualDetector
+#/filter/killWhenHit virtualDetector
+
+#Using the wall generator
+#/generator/spectrum config/generator/rockGammaK40.root
+#/generator/particle gamma
+
+#can Specify:Top,Bottom,SideRight,SideRight,Front,Back, All
+#/generator/surfacename All
+#/generator/wall_x 1.5 m
+#/generator/wall_y 1.5 m
+#/generator/wall_z 3.0 m
+#/generator/wall_center_position 0 0 0.4 m
+
+#using GPSInMaterial
+/generator/GpsInMaterialBuild true
+/generator/GpsInMaterialBuild/setMaterial PE
+
+#Using gps
+/gps/particle ion
+/gps/ion 90 232
+/gps/energy 0 keV
+
+/run/printProgress 10000
+/run/beamOn 100000

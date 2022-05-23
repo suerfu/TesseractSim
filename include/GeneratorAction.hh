@@ -64,6 +64,10 @@ public:
 
     void SetBoxCenter(G4ThreeVector boxCenter);
 
+    void GpsInMaterialBuild(bool activate);
+
+    void GpsInMaterialSetMaterial(G4String materialName);
+
 
     void ConfineOnWall();
         // When this method is called, it is assumed that the primary particle position is on the surface of the wall.
@@ -99,6 +103,8 @@ private:
 
     G4double Theta;
 
+    bool GpsInMaterial;
+
     bool onwall;
         // Flag variable to denote whether particle position should be independently sampled from world surface.
         // If true, generator will use theta and phi as w.r.t. the normal direction at the sampled position.
@@ -112,6 +118,10 @@ private:
         // Dimentions of the experimental hall.
 
     G4ThreeVector center;
+
+    double fCumulativeMaterialVolume;
+
+    std::vector<G4VPhysicalVolume*> fVolumesInMaterial;
 
     G4Box* world;
         // Pointer to the experimental hall object. Used to randomly sample surface points.
