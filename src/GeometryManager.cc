@@ -298,6 +298,12 @@ void  GeometryManager::DefineMaterials( ){
     Cu->AddElement(CuElement, natoms = 1);
 	materialColor["Cu"] = G4Color(1, 0.1, 0.1);
 
+
+	G4Material* PureCu = new G4Material("PureCu", density = 8.96*g/cm3, ncomp=1);
+	G4Element* PureCuElement = new G4Element( "Copper", "PureCu", z = 29.,  a = 63.5 * g/mole );
+	PureCu->AddElement(PureCuElement, natoms = 1);
+  materialColor["PureCu"] = G4Color(1, 0.1, 0.1);
+
     G4Material* Pb = new G4Material("Pb", density = 11.29*g/cm3, ncomp=1);
     G4Element* PbElement = new G4Element( "Lead", "Pb", z = 82.,  a = 207.2 * g/mole );
     Pb->AddElement(PbElement, natoms = 1);

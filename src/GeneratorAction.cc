@@ -90,7 +90,8 @@ GeneratorAction::~GeneratorAction(){
   G4int selectedVolume=0;
   G4double sum=0;
   do {
-    sum+=VolumesInMaterial[selectedVolume]->GetLogicalVolume()->GetSolid()->GetCubicVolume()/CLHEP::cm3;
+    //sum+=VolumesInMaterial[selectedVolume]->GetLogicalVolume()->GetSolid()->GetCubicVolume()/CLHEP::cm3;
+    sum+=VolumesInMaterial[selectedVolume]->GetLogicalVolume()->GetMass( false, false )/CLHEP::kg;
     ++selectedVolume;
   } while(sum<r);
 
@@ -319,7 +320,8 @@ void  GeneratorAction::GpsInMaterialSetMaterial(G4String materialName)
 
       if (pv->GetLogicalVolume()->GetMaterial()->GetName() == materialName) {
 	         fVolumesInMaterial.push_back(pv);
-	         fCumulativeMaterialVolume+=pv->GetLogicalVolume()->GetSolid()->GetCubicVolume()/CLHEP::cm3;
+	         //fCumulativeMaterialVolume+=pv->GetLogicalVolume()->GetSolid()->GetCubicVolume()/CLHEP::cm3;
+           fCumulativeMaterialVolume+=pv->GetLogicalVolume()->GetMass( false, false )/CLHEP::kg;
       }
       i++;
     }
