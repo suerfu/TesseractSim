@@ -28,6 +28,11 @@
 
 #include "TKey.h"
 
+/// Standard includes
+#include <algorithm>
+#include <sstream>
+#include <iterator>
+
 
 
 GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGeneratorAction(),
@@ -217,7 +222,7 @@ G4double SetEnergy(G4double E){
 
 void GeneratorAction::SetParticleName( G4String str ){
      particle=str;
-     cout<<"Simulated particle is "<<str<<endl;
+     cout<<"Simulated particle is"<<str<<endl;
 }
 
 void GeneratorAction::SetConversionSurfaceNameToIndex(G4String str){
@@ -312,6 +317,10 @@ void  GeneratorAction::GpsInMaterialSetMaterial(G4String materialName)
   {
     fVolumesInMaterial.clear();
     fCumulativeMaterialVolume = 0;
+
+    cout<<"Selected Material is "<<materialName<<endl;
+
+
     G4PhysicalVolumeStore *PVStore = G4PhysicalVolumeStore::GetInstance();
     G4int i = 0;
     while (i<(G4int)PVStore->size()) {
