@@ -256,7 +256,7 @@ int main( int argc, char* argv[]){
             double duration = 0;
 
             for( auto k=j->second.begin(); k!=j->second.end(); k++){
-                cout << "\t adding" << *k << endl;
+                cout << "\t adding " << *k << endl;
 
                 FillHistFromTree( &temp, *k, voi, i->vetoInfo );
 
@@ -339,14 +339,22 @@ TMacro GetMacro( string rootName, string macroName){
 void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, double> vetoInfo ){
 
     string treeName = "events";
+        // default ROOT tree name.
 
     TFile file( rootName.c_str(), "READ" );
     TTree* tree = (TTree*) file.Get( treeName.c_str() );
 
+    // Set the branch address for the main variable which is energy deposition in the specified volume.
+    //
     double energy;
     string plotVar = string( "edep_" ) + voi;
     tree->SetBranchAddress( plotVar.c_str(), &energy);
 
+    // Some information for vetoes
+    // volName stores names of the active veto volumes.
+    // thresholds stores the corresponding thresholds.
+    // vetoVar is used to read the energy deposits in active vetoes from ROOT.
+    //
     vector< string > volName;
     vector< double > thresholds;
     vector< double > vetoVar;
@@ -358,20 +366,28 @@ void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, doub
         tree->SetBranchAddress( volName[volName.size()-1].c_str(), &vetoVar[vetoVar.size()-1]);
     }
 
-    long long Nentries = tree->GetEntry();
-    cout << "There are " << Nentries << " entries in " << rootName << endl;
+    long long Nentries = tree->GetEntries();
+    //cout << "There are " << Nentries << " entries in " << rootName << endl;
 
     bool fill = false;
+        // flag variable used to mark events that passes all active vetoes.
 
     for( unsigned long long n=0; n<Nentries; n++){
+
         tree->GetEntry(n);
+        
+        // An arbitrary energy threshold so that 0 is not filled.
+        //
         if( energy>1e-9 ){
 
             fill = true;
 
+            // Iterate over all the veto volumes to see if the event should be vetoed or not.
+            // If vetoed, fill should be false.
+            //
             for( unsigned int i=0; i<volName.size(); i++ ){
                 if( vetoVar[i] > thresholds[i] ){
-                    cout << "Veto: " << volName[i] << " Edep = " << vetoVar[i] << " keV, greater than threshold " << thresholds[i] << "keV" << endl;
+                    //cout << "Veto: " << volName[i] << " Edep = " << vetoVar[i] << " keV, greater than threshold " << thresholds[i] << "keV, entry = " << n << endl;
                     fill = false;
                 }
             }

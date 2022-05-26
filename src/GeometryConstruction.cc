@@ -115,36 +115,45 @@ void GeometryConstruction::ConstructUserVolumes(){
 							10*cm/2,//GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
 							3.33/2*cm,//(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
 							0, 2*M_PI);
-				//G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
-				//			GeometryManager::Get()->GetMaterial("G4_Galactic"),
-				//			"virtualDetectorLV");
+
+				G4Tubs* virtualDetector_veto = new G4Tubs( "virtualDetectorveto",
+							0,
+							10*cm/2,
+							10*cm/2,
+							0, 2*M_PI);
 
                 G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
-      			            GeometryManager::Get()->GetMaterial( "G4_Ge" ),
+      			            GeometryManager::Get()->GetMaterial( "G4_Si" ),
       			            "virtualDetectorLV");
 
-				G4VPhysicalVolume * virtualDetector1 = new G4PVPlacement(0,
-							G4ThreeVector(0,0,-50*mm),
+                G4LogicalVolume * virtualDetectorVetoLogic = new G4LogicalVolume(virtualDetector_veto,
+      			            GeometryManager::Get()->GetMaterial( "G4_Si" ),
+      			            "virtualDetectorVetoLV");
+
+				G4VPhysicalVolume * virtualDetector = new G4PVPlacement(0,
+							G4ThreeVector(0,0,/*5*/0*mm),
 							virtualDetectorLogic,
 							"GeDetTop",
 							GeometryManager::Get()->GetLogicalVolume("world"),
 							false,
 							0,
 							fCheckOverlaps);
-
+/*
 				G4VPhysicalVolume * virtualDetector2 = new G4PVPlacement(0,
-							G4ThreeVector(0,0,50*mm),
-							virtualDetectorLogic,
-							"GeDetBot",
+							G4ThreeVector(0,0,-50*mm),
+							virtualDetectorVetoLogic,
+							"GeDetVeto",
 							GeometryManager::Get()->GetLogicalVolume("world"),
 							false,
 							0,
 							fCheckOverlaps);
-
-			}else if(geoType%100==1){
+*/
+			}
+            else if(geoType%100==1){
 				//GeoDetectorHeRALD* detectorHeRALD = new GeoDetectorHeRALD());
 				// detectorHeRALD->Construct();
-			}else if(geoType%100==2){
+			}
+            else if(geoType%100==2){
 				//GeoDetectorSPICE* detectorSPICE = new GeoDetectorSPICE());
 				// detectorSPICE->Construct();
 			}
