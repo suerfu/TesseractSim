@@ -147,13 +147,37 @@ void GeoCryostat::ConstructColdParts(){
 									GeometryManager::Get()->GetDimensions("MXCWallHeight")/2,
 									0, 2*M_PI);
 	G4LogicalVolume * MXCWallLogic = new G4LogicalVolume( MXCWallTubs, 
-									GeometryManager::Get()->GetMaterial(/*"Cu"*/"NaI"),
+									GeometryManager::Get()->GetMaterial("Cu"),
 									name+"MXCWallLV");
 	G4VPhysicalVolume* MXCWallPhysical = new G4PVPlacement(0,
 									G4ThreeVector(0, 0, 0),//GeometryManager::Get()->GetDimensions("detectorZOffset")),
 									MXCWallLogic,
 									name + "MXCWall",
 									motherLogic,
+									false,
+									0,
+									fCheckOverlaps);
+
+    // Adding indium wire seal
+
+    G4double wireDiameter = 1.27 * mm;
+    G4double InWireID = GeometryManager::Get()->GetDimensions("MXCWallInnerRadius") + 1 * cm;
+
+	G4Tubs* InWireSolid = new G4Tubs( name+"InWireSolid", 
+									InWireID,
+									InWireID + wireDiameter,
+									wireDiameter/2,
+									0, 2*M_PI);
+
+	G4LogicalVolume * InWireLV = new G4LogicalVolume( InWireSolid, 
+									GeometryManager::Get()->GetMaterial("G4_In"),
+									"InWireLV");
+
+	G4VPhysicalVolume* InWire = new G4PVPlacement(0,
+									G4ThreeVector(0, 0, 0),//GeometryManager::Get()->GetDimensions("detectorZOffset")),
+									InWireLV,
+									"InWire",
+									MXCWallLogic,
 									false,
 									0,
 									fCheckOverlaps);
