@@ -112,42 +112,24 @@ void GeometryConstruction::ConstructUserVolumes(){
 			if(geoType%100==0){
 				G4Tubs* virtualDetector_solid = new G4Tubs( "virtualDetectorsolid",
 							0,
-							10*cm/2,//GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
-							3.33/2*cm,//(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
+							GeometryManager::Get()->GetDimensions("MXCWallInnerRadius"),
+							(GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2,//20mm is the top beam attachment height.
 							0, 2*M_PI);
-
-				G4Tubs* virtualDetector_veto = new G4Tubs( "virtualDetectorveto",
-							0,
-							10*cm/2,
-							10*cm/2,
-							0, 2*M_PI);
+                G4cout << "MXC ID is " << GeometryManager::Get()->GetDimensions("MXCWallInnerRadius") << G4endl;
+                G4cout << "MXC height is " << (GeometryManager::Get()->GetDimensions("MXCWallHeight") - 20*mm)/2 << G4endl;
 
                 G4LogicalVolume * virtualDetectorLogic = new G4LogicalVolume(virtualDetector_solid,
-      			            GeometryManager::Get()->GetMaterial( "G4_Si" ),
+      			            GeometryManager::Get()->GetMaterial( "LHe" ),
       			            "virtualDetectorLV");
 
-                G4LogicalVolume * virtualDetectorVetoLogic = new G4LogicalVolume(virtualDetector_veto,
-      			            GeometryManager::Get()->GetMaterial( "G4_Si" ),
-      			            "virtualDetectorVetoLV");
-
 				G4VPhysicalVolume * virtualDetector = new G4PVPlacement(0,
-							G4ThreeVector(0,0,/*5*/0*mm),
+							G4ThreeVector(0,0,-10*mm),
 							virtualDetectorLogic,
-							"GeDetTop",
+							"virtualDetector",
 							GeometryManager::Get()->GetLogicalVolume("world"),
 							false,
 							0,
 							fCheckOverlaps);
-/*
-				G4VPhysicalVolume * virtualDetector2 = new G4PVPlacement(0,
-							G4ThreeVector(0,0,-50*mm),
-							virtualDetectorVetoLogic,
-							"GeDetVeto",
-							GeometryManager::Get()->GetLogicalVolume("world"),
-							false,
-							0,
-							fCheckOverlaps);
-*/
 			}
             else if(geoType%100==1){
 				//GeoDetectorHeRALD* detectorHeRALD = new GeoDetectorHeRALD());
