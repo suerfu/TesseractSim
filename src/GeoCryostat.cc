@@ -157,7 +157,7 @@ void GeoCryostat::ConstructColdParts(){
 									false,
 									0,
 									fCheckOverlaps);
-
+    /*
     // Adding indium wire seal
 
     G4double wireDiameter = 1.27 * mm;
@@ -181,4 +181,5 @@ void GeoCryostat::ConstructColdParts(){
 									false,
 									0,
 									fCheckOverlaps);
+    */
 }
