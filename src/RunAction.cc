@@ -9,7 +9,8 @@
 
 // history:
 // 2021-11-18 B.Suerfu initial version
-// 2021-04-28 B.Suerfu outputing material table as a TMacro
+// 2022-04-28 B.Suerfu outputing material table as a TMacro
+// 2022-05-06 B.Suerfu changed output macro name as runMacro for consistency; added version in macro
 
 #include "RunAction.hh"
 #include "RunActionMessenger.hh"
@@ -24,8 +25,12 @@
 #include "TTree.h"
 
 
-RunAction::RunAction( CommandlineArguments* c) : G4UserRunAction(),
-     fRunActionMessenger(0), fCmdlArgs( c ){
+RunAction::RunAction( CommandlineArguments* c) : G4UserRunAction(), fRunActionMessenger(0), fCmdlArgs( c ){
+
+    version = "1.0.1";
+        // Version number. Do not change.
+        // Backward compatible should increment minor number
+        // Bug fixes should increment patch number
 
     fRunActionMessenger = new RunActionMessenger( this );
 
@@ -75,10 +80,15 @@ RunAction::~RunAction(){
     //
     if( outputFile!=0 ) {
 
+        TMacro ver( "version" );
+        ver.AddLine( version.c_str() );
+        ver.Write();
+
         // Write the macro used in this run as a ROOT macro
         //
         for( unsigned int i=0; i<macros.size(); i++){
-            TMacro mac( macros[i] );
+            TMacro mac( "runMacro" );
+            mac.ReadFile( macros[i] );
             mac.Write();    
         }
 

@@ -69,6 +69,8 @@ public:
 
 private:
 
+    string version;
+
     RunActionMessenger* fRunActionMessenger;
 
     CommandlineArguments* fCmdlArgs;

@@ -10,6 +10,7 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include "TMacro.h"
 
 using namespace std;
 
@@ -47,6 +48,12 @@ public:
 
     // Process the tracks in input and write output as a ROOT TTree in output.
     void Process( string output, vector<string> inputs );
+
+    // Get duration of simulation in seconds
+    double GetTimeSimulated( TMacro run, TMacro geo );
+
+    // Get the number of particle simulated in this run
+    double GetNbParticleSimulated( TMacro mac );
 
 private:
 
@@ -86,6 +93,20 @@ private:
         // index of the event cluster when multiple event occurred in the DAQ window.
     double timeStamp;
         // timeStamp of the interaction.
+
+    // Function to retrieve TMacro from the output file so that subsequent inputs are macros.
+    TMacro GetMacro( string file, string name);
+
+    double Nsimulated;
+        // Total No. of particles simulated in this run
+
+    double Tsimulated;
+        // Total days simulated.
+        // Assuming 1 Bq/kg for internal radioactivity
+        // or 1 /m2/s for external gamma/neutron
+        // Internal:
+        //  If there is material/geometry table, use the correct mass.
+        //  If not, assume mass is 1 kg.
 
     map<string, double> energyDeposit;
 

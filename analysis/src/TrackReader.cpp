@@ -9,6 +9,11 @@
 #include <algorithm>
 #include <set>
 
+// history:
+// 2022-05-06 B. Suerfu adding functions to calculate simulation duration automatically.
+//      Note: at this stage if run/beamOn, confine or wall_ appears in comments, it may affect result.
+//      Note2: surface mode supports only full surface. It does not support particular surfaces.
+
 using namespace std;
 
 
@@ -71,8 +76,6 @@ void TrackReader::ConfigureTTree( TTree* tree ){
         tree->Branch( edepName.c_str(), &energyDeposit[volumeName], rootName.c_str() );
             // Set address for ROOT tree branch
     }
-
-
 }
 
 
@@ -104,6 +107,11 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
     //
     TFile* outputFile = new TFile( outputStr.c_str(), "NEW" );
 
+    TMacro gTab;
+        // Keep one copy of geometry table in the output.
+        // By default, it will be the first occurance.
+        // By default, the geometry is assumed to be identical in all the runs in the same batch.
+
     if( !outputFile ){
         cerr << "Error creating output file " << outputStr << endl;
         return;
@@ -119,12 +127,39 @@ void TrackReader::Process( string outputStr, vector<string> inputStr ){
 
     ID = 0;
 
+    //Nsimulated = 0;
+    Tsimulated = 0;
+
     for( vector<string>::iterator itr = inputStr.begin(); itr!=inputStr.end(); itr++ ){
+        
         ProcessFile( tree, *itr );
+
+        TMacro mac1 = GetMacro( *itr, "runMacro" );
+        TMacro mac2 = GetMacro( *itr, "geometryTable" );
+            // feature since ver. 0.1.1
+
+        if( itr==inputStr.begin() ){
+            gTab = mac2;
+        }
+
+        Tsimulated += GetTimeSimulated( mac1, mac2 );
     }
 
-//    tree->Write();
+    outputFile->cd();
+
+    tree->Write();
+    gTab.Write();
+
+    stringstream ss;
+    ss << Tsimulated;
+
+    TMacro mac("duration");
+    mac.AddLine( ss.str().c_str() );
+    mac.Write();
+
     outputFile->Write();
+    outputFile->Close();
+
     cout << "Output file " << outputStr << " written.\n";
 
 }
@@ -187,6 +222,7 @@ void TrackReader::ProcessFile( TTree* tree, string input ){
 
             //cout << "Processing event " << eventID << " at entry " << n <<endl;
             ProcessPulseArray( tree );
+                // filling is done at this step.
 
             map<string, MCPulseArray>::iterator clr;
             for( clr=pulseArrayAV.begin(); clr!=pulseArrayAV.end(); clr++ ){
@@ -390,3 +426,124 @@ vector<string> TrackReader::GetVOIFromFile( vector<string> inputName){
 
     return return_val;
 }
+
+
+// Iterate over the list of objects until you find a matching name.
+TMacro TrackReader::GetMacro( string input, string name ){
+
+    TFile* file = TFile::Open( input.c_str(), "READ");
+
+    TIter next( file->GetListOfKeys() );
+    TString mac_name;
+    TKey *key;
+
+    while( (key=(TKey*)next()) ){
+
+        mac_name = key->GetName();
+
+        if ( mac_name.EqualTo(name) ){
+            TMacro mac( *((TMacro*)file->Get( mac_name )) );
+            file->Close();
+            return mac;
+        }
+    }
+
+    file->Close();
+    return TMacro();
+}
+
+
+double TrackReader::GetTimeSimulated( TMacro runMacro, TMacro geoMacro ){
+    
+    double NbParticle = GetNbParticleSimulated( runMacro );
+    if( NbParticle<0 ){
+        return -1;
+    }
+    cout << NbParticle << " particles simulated" << endl;
+
+    // First check if this is a surface type simulation or bulk type simulation.
+    string keyword( "/generator/wall" );
+    string keyword2( "/confine" );
+
+    if( runMacro.GetLineWith( keyword.c_str() ) != 0 ){
+
+        string target( runMacro.GetLineWith( keyword.c_str() )->String().Data() );
+
+        string foo;
+        double xLen, yLen, zLen;
+        string xUnit, yUnit, zUnit;
+
+        stringstream ss(  runMacro.GetLineWith( (keyword+"_x").c_str() )->String().Data() );
+        ss >> foo >> xLen >> xUnit;
+        if( xUnit == "cm" ){
+            xLen *= 0.01;
+        }
+
+        ss.str(  runMacro.GetLineWith( (keyword+"_y").c_str() )->String().Data() );
+        ss.clear();
+        ss >> foo >> yLen >> yUnit;
+        if( yUnit == "cm" ){
+            yLen *= 0.01;
+        }
+
+        ss.str(  runMacro.GetLineWith( (keyword+"_z").c_str() )->String().Data() );
+        ss.clear();
+        ss >> foo >> zLen >> zUnit;
+        if( zUnit == "cm" ){
+            zLen *= 0.01;
+        }
+
+        double surfArea = 2 * ( xLen*yLen + xLen*zLen + yLen*zLen );
+        cout << "Total surface area is " << surfArea << " m2" << endl;
+
+        return ( NbParticle / surfArea );
+            // Assuming flux is 1 /m2/s, calculate Tsim
+    }
+    // This simulation is for bulk radioactivity
+    // But one needs to check if there is confine because it may also be a simple monoenergetic beam with point source.
+    else if( runMacro.GetLineWith( keyword2.c_str() ) != 0 ){
+
+        string foo;
+        string vol;
+        double mass = -1;
+
+        stringstream ss(  runMacro.GetLineWith( keyword2.c_str() )->String().Data() );
+        ss >> foo >> vol;
+        cout << "Source-confining volume is " << vol << endl;
+
+        if( geoMacro.GetLineWith( vol.c_str() ) == 0 ){
+            cout << "Warning: confine volume " << vol << " not found in geometry table. Using 1 kg." << endl;
+            mass = 1;
+        }
+        else{
+            ss.str(  geoMacro.GetLineWith( vol.c_str() )->String().Data() );
+            ss.clear();
+            ss >> foo >> mass;
+            cout << "Mass of source volume is " << mass << " kg" << endl;
+        }
+        return ( NbParticle ) / mass;
+    }
+    else{
+        return -1;
+    }
+}
+
+
+// Warning: this function needs improvements
+// At the current state, it does not deal with duplicate macro lines or lines starting with comment #
+// Since GetLineWith will return the first line that contains the pattern.
+
+double TrackReader::GetNbParticleSimulated( TMacro mac ){
+    
+    string target( mac.GetLineWith( "/run/beamOn" )->String() );
+    stringstream ss( target );
+
+    string foo;
+    double NbParticle = -1;
+
+    ss >> foo >> NbParticle;
+
+    return NbParticle;
+}
+
+
