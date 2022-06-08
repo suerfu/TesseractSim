@@ -9,12 +9,12 @@
 #include "CLHEP/Random/RandFlat.h"
 #include "GeneratorAction.hh"
 #include "GeneratorMessenger.hh"
-
+#include "MuonGenerator.hh"
 #include "G4RunManager.hh"
 //#include "G4Event.hh"
 #include "G4ParticleGun.hh"
-//#include "G4ParticleTable.hh"
-//#include "G4ParticleDefinition.hh"
+#include "G4ParticleTable.hh"
+#include "G4ParticleDefinition.hh"
 #include "G4GeneralParticleSource.hh"
 //#include "G4SystemOfUnits.hh"
 //#include "Randomize.hh"
@@ -27,13 +27,35 @@
 
 
 GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGeneratorAction(),
-    fRunAction( runAction)
+    fRunAction( runAction), useMuonGenerator(true),myMuonSource(NULL), fgun(NULL), fgps(NULL),
+    myParticleTable(NULL), verbosity(1), MsgPrefix("")
 {
 
     fCmdlArgs = fRunAction->GetCommandlineArguments();
 
-    fgun = new G4ParticleGun();
-    fgps = new G4GeneralParticleSource();
+    //fgun = new G4ParticleGun();
+    //fgps = new G4GeneralParticleSource();
+
+    G4int n_particle = 1;
+	//use GPS or muon generator
+	if (useMuonGenerator == true) {
+		fgun = new G4ParticleGun(n_particle);
+		//if(sourceID==1){
+		myMuonSource = new MuonGenerator();
+		//}
+		//if(sourceID==2){
+		//  myMuonSource = new InterfaceToMUSUN(); //TODO add MUSIN
+		//}
+		// default particle
+		G4ParticleDefinition* particleDef = myParticleTable->FindParticle("mu-");
+		fgun->SetParticleDefinition(particleDef);
+		fgun->SetParticleMomentumDirection(G4ThreeVector(0., 0., -1.));
+		fgun->SetParticleEnergy(200. * GeV);
+	} else {
+	  G4cout << MsgPrefix << "Use General Particle Source." << G4endl;
+	  fgps = new G4GeneralParticleSource();
+	}
+    //this->InitPGA();
 
     //Npostponed = 0;
     //NDelayed = 0;
@@ -41,7 +63,7 @@ GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGenerato
     file = 0;
     particle="geantino";
 
-
+    myParticleTable = G4ParticleTable::GetParticleTable();
     surface_index=0;
 
 
@@ -68,11 +90,55 @@ GeneratorAction::~GeneratorAction(){
         file->Close();
         delete file;
     }
+	if (myMuonSource != NULL) {
+		delete myMuonSource;
+		myMuonSource = NULL;
+	}
 
+  	if (fgps != NULL) {
+		delete fgps;
+		fgps = NULL;
+	}
+
+	if (fgun != NULL) {
+		delete fgun;
+		fgun = NULL;
+	}
     delete primaryGeneratorMessenger;
     delete world;
 }
+void GeneratorAction::UseMuonGenerator(G4bool myMuonStatus) {
+	useMuonGenerator = myMuonStatus;
+	if(verbosity>=1){
+	  G4cout << MsgPrefix << "Use muon source: " << useMuonGenerator << G4endl;
+	}
+	//this->InitPGA();
+}
 
+
+/*void GeneratorAction::InitPGA() {
+	G4int n_particle = 1;
+	//use GPS or muon generator
+	if (useMuonGenerator == true) {
+		fgun = new G4ParticleGun(n_particle);
+		//if(sourceID==1){
+		myMuonSource = new MuonGenerator();
+		//}
+		//if(sourceID==2){
+		//  myMuonSource = new InterfaceToMUSUN(); //TODO add MUSIN
+		//}
+		// default particle
+		G4ParticleDefinition* particleDef = myParticleTable->FindParticle("mu-");
+		fgun->SetParticleDefinition(particleDef);
+		fgun->SetParticleMomentumDirection(G4ThreeVector(0., 0., -1.));
+		fgun->SetParticleEnergy(200. * GeV);
+	} else {
+	  G4cout << MsgPrefix << "Use General Particle Source." << G4endl;
+	  fgps = new G4GeneralParticleSource();
+	}
+
+}
+*/
 G4ThreeVector SetPosition(int surface, double wall_x,double wall_y,double wall_z, G4ThreeVector center){
   switch(surface)
           {
@@ -277,7 +343,25 @@ void GeneratorAction::SetSpectrum( G4String str ){
 
 void GeneratorAction::GeneratePrimaries(G4Event* anEvent){
 
-    if( sample==true ){
+
+	if (useMuonGenerator == true) {
+	  myMuonSource->GenerateMuon();
+	  G4double initialEnergy = myMuonSource->GetStartEnergy();
+	  G4ThreeVector initialPosition = myMuonSource->GetStartPosition();
+	  G4ThreeVector initialDirection = myMuonSource->GetStartDirection();
+	  G4String particleID = myMuonSource->GetParticleID();
+	  //if(useGeantinos){
+	  //  particleID = "geantino";
+	 // }
+	  G4ParticleDefinition* particleDef = myParticleTable->FindParticle(particleID);
+	  fgun->SetParticleDefinition(particleDef);
+	  fgun->SetParticleEnergy(initialEnergy);
+	  fgun->SetParticleMomentumDirection(initialDirection);
+	  fgun->SetParticlePosition(initialPosition);
+	  fgun->GeneratePrimaryVertex(anEvent);
+	}
+
+  else if( sample==true ){
         h1->GetRandom2(E,Theta);
         if (surface_index==6) {
           int random_surface_index=GetRandomSurfaceIndex(wall_x,wall_y,wall_z);

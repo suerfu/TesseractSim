@@ -9,13 +9,25 @@
 /// \brief Definition of the GeneratorMessenger class
 
 #include "GeneratorMessenger.hh"
-
+#include "G4UIcmdWithABool.hh"
 #include "GeneratorAction.hh"
 
 GeneratorMessenger::GeneratorMessenger( GeneratorAction* generator )  : G4UImessenger(), primaryGenerator(generator), primaryGeneratorDir(0) {
 
 	primaryGeneratorDir = new G4UIdirectory("/generator/");
 	primaryGeneratorDir->SetGuidance("Generator position, momentum and energy spectrum control.");
+
+	cmdUseMuonGenerator = new G4UIcmdWithABool("/generator/UseMuonGenerator", this);
+	
+	cmdUseMuonGenerator->SetGuidance(
+			"Use the muon generator instead of the general particle source.");
+	cmdUseMuonGenerator->SetGuidance(
+			"This command MUST be applied before \"beamOn\".");
+	cmdUseMuonGenerator->SetGuidance("Default value is 'false'.");
+	cmdUseMuonGenerator->SetDefaultValue(true);
+	cmdUseMuonGenerator->AvailableForStates(G4State_Idle);
+
+
 
     cmdSetSpectrum = new G4UIcmdWithAString("/generator/spectrum", this);
     cmdSetSpectrum->SetGuidance("Set the ROOT file from which to sample position, direction and energy.");
@@ -93,6 +105,7 @@ GeneratorMessenger::~GeneratorMessenger(){
 		delete cmdSetWall_y;
 		delete cmdSetWall_z;
 		delete CmdBoxCenter;
+		delete cmdUseMuonGenerator;
     //delete cmdSetPosition;
     //delete cmdSetDir;
     //delete cmdSetEnergy;
@@ -104,11 +117,13 @@ void GeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValue){
 
 	if( command == cmdSetSpectrum )	{
 		primaryGenerator->SetSpectrum( newValue);
-	}
-
+		}
+	if (command == cmdUseMuonGenerator) {
+		primaryGenerator->UseMuonGenerator(cmdUseMuonGenerator->GetNewBoolValue(newValue));
+		}
 	if( command == cmdSetParticle){
-				 primaryGenerator->SetParticleName( newValue);
-		 }
+			primaryGenerator->SetParticleName( newValue);
+		}
 
 	if( command == cmdSetSurfaceName){
  			   primaryGenerator->SetConversionSurfaceNameToIndex( newValue);
