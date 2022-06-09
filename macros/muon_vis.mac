@@ -1,0 +1,94 @@
+# Macro file for the initialization
+# in interactive session
+
+#Set geometry
+# 100 TESSERACT with virtual detector
+# 101           with HeRALD detector (not implemented yet)
+# 102           with SPICE  detector (not implemented yet)
+# 200 Rock
+
+
+/geometry/type 100
+/geometry/setByVersion Hybrid_V1_1
+/geometry/construct
+
+/tracking/verbose 0
+
+
+
+
+#Setting display settings
+#/vis/open HepRepFile
+#/vis/open OGL 1600x1600-0+0
+#/vis/open OGLIXm
+#/vis/open DAWNFILE
+#/vis/open RayTracer
+
+#/vis/scene/create
+#/vis/viewer/set/style surface
+#/vis/geometry/set/forceLineSegmentsPerCircle all 0 100		    
+#/vis/drawVolume
+
+#/vis/viewer/set/viewpointThetaPhi 45 90 deg
+#/vis/viewer/zoom 10
+
+#/vis/modeling/trajectories/create/drawByParticleID
+#/vis/modeling/trajectories/drawByParticleID-0/set gamma yellow
+#/vis/modeling/trajectories/drawByParticleID-0/set neutron green
+#/vis/modeling/trajectories/drawByParticleID-0/set e+ black
+#/vis/modeling/trajectories/drawByParticleID-0/set e- black
+#/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton cyan
+#/vis/modeling/trajectories/drawByParticleID-0/set mu- green
+#/vis/modeling/trajectories/drawByParticleID-0/set proton black
+#/vis/modeling/trajectories/list
+
+
+#/vis/filtering/trajectories/create/attributeFilter
+#/vis/filtering/trajectories/attributeFilter-0/setAttribute IMag
+#/vis/filtering/trajectories/attributeFilter-0/addInterval 2 keV 200 GeV
+#/vis/filtering/trajectories/attributeFilter-0/addInterval 3 eV 3.001 eV
+
+
+
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add neutron
+#/vis/filtering/trajectories/particleFilter-0/add mu-
+#/vis/filtering/trajectories/particleFilter-0/add opticalphoton
+
+
+
+#acc. to ApplicationDeveloperHandbook red = x-axis; green = y-axis; blue = z-axis
+#/vis/scene/add/axes 0 -5 0 1 m
+
+#/vis/scene/add/trajectories 100
+#/tracking/storeTrajectory 1
+#/vis/scene/add/trajectories 100
+#/vis/scene/add/trajectories rich
+#/vis/scene/endOfEventAction accumulate 1000
+
+#/vis/viewer/addCutawayPlane 60 0 0 cm 1 0 0
+#/vis/viewer/flush
+#/vis/ogl/printEPS
+
+
+###################################################
+#Set GPS properties
+#/generator/UseMuonGenerator true
+
+#Use Markus Horns muon generator
+/Tesseract/MuonGenerator/Verbose 1
+/Tesseract/MuonGenerator/PathToProfileFile /home/heuerman/TesseractMuonGenerator/TesseractSim/profile.dat
+/Tesseract/MuonGenerator/NbOfZenithBins 90
+/Tesseract/MuonGenerator/NbOfAzimuthBins 360
+/Tesseract/MuonGenerator/NbOfEnergyBins 100
+/Tesseract/MuonGenerator/EnergyMin 20 GeV
+/Tesseract/MuonGenerator/EnergyMax 200 GeV
+/Tesseract/MuonGenerator/RadiusSphere 10 m
+/Tesseract/MuonGenerator/RadiusHemisphere 30 m
+/Tesseract/MuonGenerator/BuildLookUpTable						    
+
+##################################################
+#start run
+/run/initialize
+/run/beamOn 1
+/persistency/gdml/write test.gdml
