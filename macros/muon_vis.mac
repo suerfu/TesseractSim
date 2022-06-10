@@ -76,16 +76,16 @@
 #/generator/UseMuonGenerator true
 
 #Use Markus Horns muon generator
-/Tesseract/MuonGenerator/Verbose 1
-/Tesseract/MuonGenerator/PathToProfileFile /home/heuerman/TesseractMuonGenerator/TesseractSim/profile.dat
-/Tesseract/MuonGenerator/NbOfZenithBins 90
-/Tesseract/MuonGenerator/NbOfAzimuthBins 360
-/Tesseract/MuonGenerator/NbOfEnergyBins 100
-/Tesseract/MuonGenerator/EnergyMin 20 GeV
-/Tesseract/MuonGenerator/EnergyMax 200 GeV
-/Tesseract/MuonGenerator/RadiusSphere 10 m
-/Tesseract/MuonGenerator/RadiusHemisphere 30 m
-/Tesseract/MuonGenerator/BuildLookUpTable						    
+/geneartor/MuonGenerator/Verbose 1
+/geneartor/MuonGenerator/PathToProfileFile /home/heuerman/TesseractMuonGenerator/TesseractSim/profile.dat
+/geneartor/MuonGenerator/NbOfZenithBins 90
+/geneartor/MuonGenerator/NbOfAzimuthBins 360
+/geneartor/MuonGenerator/NbOfEnergyBins 100
+/geneartor/MuonGenerator/EnergyMin 20 GeV
+/geneartor/MuonGenerator/EnergyMax 200 GeV
+/geneartor/MuonGenerator/RadiusSphere 10 m
+/geneartor/MuonGenerator/RadiusHemisphere 30 m
+/geneartor/MuonGenerator/BuildLookUpTable						    
 
 ##################################################
 #start run

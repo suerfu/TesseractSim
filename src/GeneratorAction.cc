@@ -11,6 +11,7 @@
 #include "GeneratorMessenger.hh"
 #include "MuonGenerator.hh"
 #include "G4RunManager.hh"
+#include "MuonGeneratorMessenger.hh"
 //#include "G4Event.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
@@ -32,7 +33,7 @@ GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGenerato
 {
 
     fCmdlArgs = fRunAction->GetCommandlineArguments();
-
+    
     //fgun = new G4ParticleGun();
     //fgps = new G4GeneralParticleSource();
 
@@ -42,6 +43,7 @@ GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGenerato
 		fgun = new G4ParticleGun(n_particle);
 		//if(sourceID==1){
 		myMuonSource = new MuonGenerator();
+    muonMessenger = new MuonGeneratorMessenger(myMuonSource);
 		//}
 		//if(sourceID==2){
 		//  myMuonSource = new InterfaceToMUSUN(); //TODO add MUSIN
@@ -68,6 +70,7 @@ GeneratorAction::GeneratorAction( RunAction* runAction) : G4VUserPrimaryGenerato
 
 
     primaryGeneratorMessenger = new GeneratorMessenger(this);
+    
 
     onwall = false;
     sample = false;
@@ -105,6 +108,7 @@ GeneratorAction::~GeneratorAction(){
 		fgun = NULL;
 	}
     delete primaryGeneratorMessenger;
+    delete muonMessenger;
     delete world;
 }
 void GeneratorAction::UseMuonGenerator(G4bool myMuonStatus) {

@@ -32,6 +32,7 @@ class G4Event;
 class GeneratorMessenger;
 class VMuonSource;
 class MuonGenerator;
+class MuonGeneratorMessenger;
 
 using std::string;
 
@@ -79,6 +80,7 @@ private:
     //void InitPGA();	
 
     GeneratorMessenger* primaryGeneratorMessenger;
+    MuonGeneratorMessenger *muonMessenger;
     RunAction* fRunAction;
     CommandlineArguments* fCmdlArgs;
     G4ParticleGun*  fgun;
@@ -87,8 +89,8 @@ private:
     G4String particle;
     int surface_index;
 	G4bool useMuonGenerator;
-	VMuonSource *myMuonSource;
-    //MuonGenerator  *myMuonSource;
+	//VMuonSource *myMuonSource;
+    MuonGenerator  *myMuonSource;
 	G4ParticleTable *myParticleTable;
     G4int verbosity;
 	G4String MsgPrefix;
