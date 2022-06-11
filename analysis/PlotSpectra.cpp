@@ -18,7 +18,7 @@
 //      --title Name1
 //      --add Activity1/Flux1 foo1.root [foo2.root ...]
 //      --add Activity2/Flux2 bar1.root [bar2.root ...]
-//      --veto VolName Threshold
+//      --veto VolName Threshold (can be multiple veto volumes)
 //      --color C1 [integer using ROOT code scheme]
 //      --style S1 [integer using ROOT code scheme]
 
@@ -113,6 +113,11 @@ double GetDuration( TMacro macro );
 // Returns the active mass from the specified macro.
 //
 double GetActiveMass( TMacro macro, string voi );
+
+
+// Returns the total mass based on material
+//
+double GetTotalMassByMaterial( TMacro macro, string name );
 
 
 // Fill histogram from another ROOT tree.
@@ -256,7 +261,8 @@ int main( int argc, char* argv[]){
             double duration = 0;
 
             for( auto k=j->second.begin(); k!=j->second.end(); k++){
-                cout << "\t adding " << *k << endl;
+
+                cout << "\tadding " << *k << endl;
 
                 FillHistFromTree( &temp, *k, voi, i->vetoInfo );
 
@@ -265,6 +271,8 @@ int main( int argc, char* argv[]){
 
                 TMacro mac_mass = GetMacro( *k, "geometryTable" );
                 activeMass = GetActiveMass( mac_mass, voi );
+                
+                cout << "\tduration: " << duration << ", active volume: " << voi << ", active mass: " << activeMass << endl;
 
             }
             cout << endl;
@@ -338,11 +346,17 @@ TMacro GetMacro( string rootName, string macroName){
 
 void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, double> vetoInfo ){
 
+    //cout << "\t\tFilling histogram from tree" << endl;
+
     string treeName = "events";
         // default ROOT tree name.
 
+    //cout << "\t\tObtaining ROOT TTree" << endl;
+
     TFile file( rootName.c_str(), "READ" );
     TTree* tree = (TTree*) file.Get( treeName.c_str() );
+
+    //cout << "\t\tObtained ROOT TTree" << endl;
 
     // Set the branch address for the main variable which is energy deposition in the specified volume.
     //
@@ -359,15 +373,23 @@ void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, doub
     vector< double > thresholds;
     vector< double > vetoVar;
 
+    // 2022-6-11
+    // Be careful!! As one pushes elements into a vector, the vector will get expanded as needed.
+    // Thus if address is previously set, it may become invalid
+    //
     for( auto itr=vetoInfo.begin(); itr!=vetoInfo.end(); itr++ ){
         volName.push_back( string("edep_") + itr->first );
         thresholds.push_back( itr->second );
         vetoVar.push_back( 0 );
-        tree->SetBranchAddress( volName[volName.size()-1].c_str(), &vetoVar[vetoVar.size()-1]);
+    }
+
+    for( unsigned int i=0; i<volName.size(); i++){
+        tree->SetBranchAddress( volName[i].c_str(), &vetoVar[i]);
+        //cout << "\t\tAddress set for " << volName[i] << " at " << (void*)(&vetoVar[i]) << endl;
     }
 
     long long Nentries = tree->GetEntries();
-    //cout << "There are " << Nentries << " entries in " << rootName << endl;
+    cout << "\t\t" << Nentries << " entries in " << rootName << endl;
 
     bool fill = false;
         // flag variable used to mark events that passes all active vetoes.
@@ -375,10 +397,15 @@ void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, doub
     for( unsigned long long n=0; n<Nentries; n++){
 
         tree->GetEntry(n);
+        /*
+        if( n>Nentries-5 ){
+            cout << "\t\t\tProcessing entry " << n << endl;
+        }
+        */
         
         // An arbitrary energy threshold so that 0 is not filled.
         //
-        if( energy>1e-9 ){
+        if( energy>1e-6 ){
 
             fill = true;
 
@@ -387,17 +414,32 @@ void FillHistFromTree( TH1F* hist, string rootName, string voi, map<string, doub
             //
             for( unsigned int i=0; i<volName.size(); i++ ){
                 if( vetoVar[i] > thresholds[i] ){
-                    //cout << "Veto: " << volName[i] << " Edep = " << vetoVar[i] << " keV, greater than threshold " << thresholds[i] << "keV, entry = " << n << endl;
                     fill = false;
                 }
             }
             if( fill==true ){
                 hist->Fill( energy );
             }
+            else{
+                /*
+                // If event is vetoed, print veto information.
+                cout << "Entry " << n;
+                for( unsigned int i=0; i<volName.size(); i++ ){
+                    cout << " " << vetoVar[i] << " (" << (void*)(&vetoVar[i]) << ")";
+                }
+                cout << endl;
+                */
+            }
         }
+        /*
+        if( n>Nentries-5 ){
+            cout << "\t\t\tEntry " << n << " processed" << endl;
+        }
+        */
     }
 
     file.Close();
+    //cout << "\t\tFile closed." << endl;
 }
 
 
@@ -407,12 +449,13 @@ double GetActiveMass( TMacro geoMacro, string voi ){
     double mass = 1;
 
     auto tmp = geoMacro.GetLineWith( voi.c_str() );
+    //cout << tmp->String().Data() << endl;
 
     if( tmp!= 0 ){
         stringstream ss(  tmp->String().Data() );
         string foo;
-        double mass;
         ss >> foo >> mass;
+        //cout << foo << " " << mass << endl;
     }
     else{
         cerr << "Failed to get active mass of " << voi << endl;
@@ -420,6 +463,7 @@ double GetActiveMass( TMacro geoMacro, string voi ){
 
     return mass;
 }
+
 
 
 double GetDuration( TMacro macro ){
@@ -494,8 +538,9 @@ bool CheckArguments( int argc, char* argv[] ){
 
 
 void PrintUsage( string name ){
-    cout << "Usage: " << name << " --hist Nbins Min Max --voi VolOfInterest --title Title1 --add Act1/Flux1 foo1.root bar1.root [--add foo2.root bar2.root] [--color N --style N --width N]" << endl;
-    cout << "\t Use --title to add multiple curves onto the same plot\n";
+    cout << "Usage: " << name << " --hist Nbins Min Max --voi VolOfInterest [--veto VetoVol1 threshold1] --title Title1 --add Act1/Flux1 foo1.root bar1.root [--add foo2.root bar2.root] [--color N --style N --width N]" << endl;
+    cout << "\t Use --title to specify multiple curves onto the same plot. Files specified after each --add will be added to the curve specified with the preceding --title.\n";
     cout << "\t Activity/flux in the unit of Bq/kg and No./m2/s, respectively.\n";
     cout << "\t --color, --style and --width are used to specify optional line color and line style using ROOT code scheme.\n";
+    cout << "\t One can optionally specify multiple veto volumes with different thresholds. Threshold is in keV.\n";
 }

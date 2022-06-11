@@ -55,6 +55,10 @@ public:
     // Get the number of particle simulated in this run
     double GetNbParticleSimulated( TMacro mac );
 
+    // Returns the total mass based on material
+    double GetMassByMaterial( TMacro macro, string name );
+
+
 private:
 
     static const unsigned int MAX_FILENAME_LEN = 128;

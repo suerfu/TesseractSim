@@ -464,6 +464,7 @@ double TrackReader::GetTimeSimulated( TMacro runMacro, TMacro geoMacro ){
     // First check if this is a surface type simulation or bulk type simulation.
     string keyword( "/generator/wall" );
     string keyword2( "/confine" );
+    string keyword3( "/GpsInMaterialBuild/setMaterial" );
 
     if( runMacro.GetLineWith( keyword.c_str() ) != 0 ){
 
@@ -523,6 +524,22 @@ double TrackReader::GetTimeSimulated( TMacro runMacro, TMacro geoMacro ){
         }
         return ( NbParticle ) / mass;
     }
+    // Bulk radioactivity by total material.
+    //
+    else if( runMacro.GetLineWith( keyword3.c_str() ) != 0 ){
+
+        string foo;
+        string mat_name;
+        double mass = -1;
+
+        stringstream ss(  runMacro.GetLineWith( keyword3.c_str() )->String().Data() );
+        ss >> foo >> mat_name;
+
+        mass = GetMassByMaterial( geoMacro, mat_name );
+        cout << "Source-confining material is " << mat_name << " " << mass << " kg" << endl;
+
+        return ( NbParticle ) / mass;
+    }
     else{
         return -1;
     }
@@ -545,5 +562,36 @@ double TrackReader::GetNbParticleSimulated( TMacro mac ){
 
     return NbParticle;
 }
+
+
+
+double TrackReader::GetMassByMaterial( TMacro macro, string name ){
+    
+    double mass = 0;
+
+    TList* maclist = macro.GetListOfLines();
+    TIter itr(maclist);
+
+    for( itr=maclist->begin(); itr!=maclist->end(); itr() ){
+
+        TObject* obj = *itr;
+
+        string line( obj->GetName() );
+        stringstream ss( line );
+
+        string vol, mat;
+        double mass_indiv;
+
+        ss >> vol >> mass_indiv >> mat;
+
+        if( mat==name ){
+            mass += mass_indiv;
+        }
+    }
+
+    return mass;
+
+}
+
 
 
