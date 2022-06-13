@@ -13,6 +13,7 @@
 #include "GeometryConstructionMessenger.hh"
 #include "GeometryManager.hh"
 #include "GeoShielding.hh"
+#include "GeoWalls.hh"
 #include "GeoCryostat.hh"
 #include "FarsideDetectorMessenger.hh"
 #include "FarsideDetector.hh"
@@ -42,9 +43,9 @@ GeometryConstruction::GeometryConstruction() : G4VUserDetectorConstruction(){
     // Set default values for world.
 	//FIXME! change to dimension of the experimental hall.
 
-    world_x = 10.*m;
-    world_y = 10.*m;
-    world_z = 10.*m;
+    world_x = 20.*m;
+    world_y = 20.*m;
+    world_z = 20.*m;
 
     simple_cube = new SimpleCube();
     fFarsideMessenger = new FarsideDetectorMessenger();
@@ -105,9 +106,11 @@ void GeometryConstruction::ConstructUserVolumes(){
 	if(geoType/100==1){ //TESSERACT
 	        G4cout<<"TESSERACT"<<G4endl;
 			//Each component is instantiated and constructed seperately.
-			GeoShielding* TESSERACTShield = new GeoShielding();
+      GeoShielding* TESSERACTShield = new GeoShielding();
+			GeoWalls* TESSERACTWalls = new GeoWalls();
 			GeoCryostat* TESSERACTCryostat = new GeoCryostat();
-			TESSERACTShield->Construct();
+      TESSERACTShield->Construct();
+			TESSERACTWalls->Construct();
 			TESSERACTCryostat->Construct();
 			if(geoType%100==0){
 				G4Tubs* virtualDetector_solid = new G4Tubs( "virtualDetectorsolid",

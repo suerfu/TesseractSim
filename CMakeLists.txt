@@ -54,6 +54,7 @@ target_link_libraries(TesseractSim ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 #
 file(COPY ${PROJECT_SOURCE_DIR}/macros DESTINATION ${PROJECT_BINARY_DIR})
 file(COPY ${PROJECT_SOURCE_DIR}/config DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/muon_config DESTINATION ${PROJECT_BINARY_DIR})
 #set(SCRIPTS
 #  /macros/gui.mac
 #  /macros/init_vis.mac
