@@ -421,7 +421,7 @@ void  GeometryManager::DefineMaterials( ){
 
     // ============ Oxygen =============
     rock->AddElement( elO, fracM_O );
-
+    materialColor["rock"] = G4Color(G4Colour::Brown());
 
 		// ***********************************
 		// Concrete

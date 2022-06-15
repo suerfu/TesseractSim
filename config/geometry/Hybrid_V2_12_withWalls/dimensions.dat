@@ -37,12 +37,6 @@ MXCWallOuterRadius 150
 MXCWallHeight      200
 #shield cube center z offset w.r.t MXC center
 shieldZOffset    81.25
-##OuterShield 1 Bpoly 2 PE
-OuterShieldLength       1385
-OuterShieldBreadth      1385
-OuterShieldHeight       1000
-OuterShieldThickness    100
-OuterShieldMaterial    2
 ##Walls
 Wall1_Thickness 30000
 Wall2_Thickness 30000
@@ -56,3 +50,6 @@ Wall4_Yoffset 6823
 Wall2_Yoffset 3741
 Ceiling_Zoffset 2285
 Floor_Zoffset 865
+##OuterShield 1 Bpoly 2 PE
+OuterShieldThickness    200
+OuterShieldMaterial    2

@@ -108,8 +108,8 @@ void GeoWalls::Construct(){
                                           G4ThreeVector{-Finish_Wall_thickness/2.0,Finish_Wall_thickness/2.0,0});
 
   G4LogicalVolume* WallLogic_concrete = new G4LogicalVolume( WallBox_concrete,
-                            //GeometryManager::Get()->GetMaterial( "concrete" ),
-                            GeometryManager::Get()->GetMaterial( "Rock_SURF" ),
+                            GeometryManager::Get()->GetMaterial( "concrete" ),
+                            //GeometryManager::Get()->GetMaterial( "Rock_SURF" ),
                             name+"WallLV_concrete");
 
   G4VPhysicalVolume* WallPhysical_concrete = new G4PVPlacement( 0,
