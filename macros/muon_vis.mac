@@ -76,19 +76,20 @@
 #/generator/UseMuonGenerator true
 
 #Use Markus Horns muon generator
-/geneartor/MuonGenerator/Verbose 1
-/geneartor/MuonGenerator/PathToProfileFile /home/heuerman/TesseractMuonGenerator/TesseractSim/profile.dat
-/geneartor/MuonGenerator/NbOfZenithBins 90
-/geneartor/MuonGenerator/NbOfAzimuthBins 360
-/geneartor/MuonGenerator/NbOfEnergyBins 100
-/geneartor/MuonGenerator/EnergyMin 20 GeV
-/geneartor/MuonGenerator/EnergyMax 200 GeV
-/geneartor/MuonGenerator/RadiusSphere 10 m
-/geneartor/MuonGenerator/RadiusHemisphere 30 m
-/geneartor/MuonGenerator/BuildLookUpTable						    
+/generator/MuonGenerator/Verbose 1
+/generator/MuonGenerator/PathToProfileFile /home/heuerman/TesseractMuonGenerator/TesseractSim/profile.dat
+/generator/MuonGenerator/NbOfZenithBins 90
+/generator/MuonGenerator/NbOfAzimuthBins 360
+/generator/MuonGenerator/NbOfEnergyBins 100
+/generator/MuonGenerator/EnergyMin 20 MeV
+/generator/MuonGenerator/EnergyMax 2 TeV
+/generator/MuonGenerator/RadiusSphere 1 m
+/generator/MuonGenerator/RadiusHemisphere 10 m
+/generator/MuonGenerator/BuildLookUpTable						    
 
 ##################################################
 #start run
 /run/initialize
-/run/beamOn 1
-/persistency/gdml/write test.gdml
+/run/printProgress 10000
+/run/beamOn 100000
+#/persistency/gdml/write test.gdml
